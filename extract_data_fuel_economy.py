@@ -1,31 +1,21 @@
 import requests
-
+import json
+import pandas as pd
+from config import FUEL_ECONOMY
 
 def get_years(num_years):
-    
-    fuel_economy_base_url = "https://fueleconomy.gov/ws/rest/vehicle"
-    headers = {
-    "Accept": "application/json"
-    }
-    
-    url_dict = {
-        "years":  "/menu/year",
-        "makes":  "/menu/make",
-        "models": "/menu/model",
-        "vehicle_ids": "/menu/options",
-    }
-    
-    url_dict = {key: fuel_economy_base_url + value for key, value in url_dict.items()}
-    
+        
     # get a list of model years
-    r_years = requests.get(url = url_dict["years"],  headers=headers)
+    # endpoint = f"{FUEL_ECONOMY["BASE_URL"]}/menu/year"
+    endpoint = f"{FUEL_ECONOMY['BASE_URL']}{FUEL_ECONOMY['ENDPOINTS']['get_years']}"
+    r_years = requests.get(url = endpoint,  headers=FUEL_ECONOMY["HEADERS"])
 
     print(r_years.url, r_years.status_code, sep="\n")
     
     try:
         json_r = r_years.json()
     except ValueError:
-        print(f'Response for {url_dict["years"]} not in JSON format')
+        print(f'Response for {endpoint} not in JSON format')
         
     r_years_array = [elem['value'] for elem in json_r['menuItem']]
     r_years_array.sort(reverse=True)
@@ -34,28 +24,17 @@ def get_years(num_years):
     return recent_years
 
 def get_makes(year):
-    fuel_economy_base_url = "https://fueleconomy.gov/ws/rest/vehicle"
-
-    headers = {
-    "Accept": "application/json"
-    }
     
-    url_dict = {
-        "years":  "/menu/year",
-        "makes":  "/menu/make",
-        "models": "/menu/model",
-        "vehicle_ids": "/menu/options",
-    }
-    
-    url_dict = {key: fuel_economy_base_url + value for key, value in url_dict.items()}
-    r_makes = requests.get(url = url_dict["makes"],  headers=headers, params={"year": year})
+    # endpoint = f"{FUEL_ECONOMY["BASE_URL"]}/menu/make"
+    endpoint = f"{FUEL_ECONOMY['BASE_URL']}{FUEL_ECONOMY['ENDPOINTS']['get_makes']}"
+    r_makes = requests.get(url = endpoint,  headers=FUEL_ECONOMY["HEADERS"], params={"year": year})
     
     print(r_makes.url, r_makes.status_code, sep="\n")
     
     try:
         json_makes = r_makes.json()
     except ValueError:
-        print(f'Response for {url_dict["makes"]} not in JSON format')
+        print(f'Response for {endpoint} not in JSON format')
         
     # print(f"MAKES:", json_makes)
     
@@ -67,24 +46,17 @@ def get_makes(year):
     return r_makes_array
 
 def get_models(year, make):
-    fuel_economy_base_url = "https://fueleconomy.gov/ws/rest/vehicle"
-
-    headers = {
-    "Accept": "application/json"
-    }
     
-    url_dict = {
-        "models": "/menu/model"}
-    
-    url_dict = {key: fuel_economy_base_url + value for key, value in url_dict.items()}
-    r_models = requests.get(url = url_dict["models"],  headers=headers, params={"year": year, "make": make})
+    # endpoint = f"{FUEL_ECONOMY["BASE_URL"]}/menu/model"
+    endpoint = f"{FUEL_ECONOMY['BASE_URL']}{FUEL_ECONOMY['ENDPOINTS']['get_models']}"
+    r_models = requests.get(url = endpoint,  headers=FUEL_ECONOMY["HEADERS"], params={"year": year, "make": make})
     
     print(r_models.url, r_models.status_code, sep="\n")
     
     try:
         json_models = r_models.json()
     except ValueError:
-        print(f'Response for {url_dict["models"]} not in JSON format')
+        print(f'Response for {endpoint} not in JSON format')
         
     # if year == '2025': # and make == 'Bugatti':
         # print(f"MODELS JSON:", json_models)
@@ -97,24 +69,16 @@ def get_models(year, make):
     return r_models_array
 
 def get_vehicle_ids(year, make, model):
-    fuel_economy_base_url = "https://fueleconomy.gov/ws/rest/vehicle"
-
-    headers = {
-    "Accept": "application/json"
-    }
     
-    url_dict = {
-       "vehicle_ids": "/menu/options"}
-    
-    url_dict = {key: fuel_economy_base_url + value for key, value in url_dict.items()}
-    r_vids = requests.get(url = url_dict["vehicle_ids"],  headers=headers, params={"year": year, "make": make, "model": model})
+    endpoint = f"{FUEL_ECONOMY['BASE_URL']}{FUEL_ECONOMY['ENDPOINTS']['get_vehicle_ids']}"
+    r_vids = requests.get(url = endpoint,  headers=FUEL_ECONOMY["HEADERS"], params={"year": year, "make": make, "model": model})
     
     # print(r_vids.url, r_vids.status_code, sep="\n")
     
     try:
         json_vids = r_vids.json()
     except ValueError:
-        print(f'Response for {url_dict["vehicle_ids"]} not in JSON format')
+        print(f'Response for {endpoint} not in JSON format')
         
     # if year == '2025': # and make == 'Bugatti':
         # print(f"MODELS JSON:", json_models)
@@ -127,7 +91,6 @@ def get_vehicle_ids(year, make, model):
     # print(f"VIDS: {r_vids_array}")
     
     return r_vids_array
-    
     
 def fetch_FE_data():
     
@@ -151,6 +114,7 @@ def fetch_FE_data():
             curr_models = get_models(y, make)
             print(curr_models)
             models.extend([Model(mdl, make, int(y)) for mdl in curr_models])
+            # break
             # if y == '2025' and make == 'Bugatti':
                 # break
         print(f"--------------\n")
@@ -165,10 +129,31 @@ def fetch_FE_data():
         vids_array.extend(mdl.get_vehicle_ids())
         # mdl.print_vehicle_ids()
         
+    vids_array.append(Vehicle(31873, 2025, "test", "test model"))
+        
+    # data = {}
+    df_array = []
     for idx, vehicle in enumerate(vids_array):
         print(f"\tVehicle {idx+1} - {vehicle}")
         vehicle.get_fuel_info()
-        break
+        # data[vehicle.id] = vehicle.fuel_raw
+        vehicle.process_fuel_info()
+        
+        df_array.append(vehicle.processed_df)
+        
+    full_df = pd.concat(df_array)
+    
+    current_time = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
+    
+    filename = f"raw_datasets/fuel_economy_{len(vids_array)}_vehicles_{current_time}.csv"
+    try:
+        full_df.to_csv(filename, index=False)
+        print(f"Data written to file '{filename}' ({full_df.shape[0]} rows, {full_df.shape[1]} cols)")
+    except Exception as e:
+        print(f"Failed to write data to CSV: {e}")
+        
+    # with open('result_2.json', 'w') as fp:
+    #     json.dump(data, fp)
     
 class Vehicle:
     def __init__(self, vehicle_id: str, year: int, make: str, model: str):
@@ -182,24 +167,46 @@ class Vehicle:
         return " | ".join(f"{k} = '{v}'" for k, v in self.__dict__.items())
     
     def get_fuel_info(self):
-                
-        fuel_economy_base_url = "https://fueleconomy.gov/ws/rest/vehicle"
-
-        headers = {
-        "Accept": "application/json"
-        }
         
-        details = requests.get(url = f"{fuel_economy_base_url}/{self.id}",  headers=headers)
+        endpoint = f"{FUEL_ECONOMY['BASE_URL']}"
+        details = requests.get(url = f"{endpoint}/{self.id}",  headers=FUEL_ECONOMY["HEADERS"])
         
         # print(r_vids.url, r_vids.status_code, sep="\n")
         
         try:
             details_json = details.json()
         except ValueError:
-            print(f'Response for "{fuel_economy_base_url}/{self.id}" not in JSON format')
-            
+            print(f'Response for "{endpoint}" not in JSON format')
+        
         print(f"JSON RESPONSE HAS {len(details_json)} fields!")
-                
+        
+        # print(type(details_json), details_json)
+        # save emission List else where (its a list of an object Emission, cannot simply have it as a column in a df, must be processed separately)
+        self.emissionsList = details_json["emissionsList"]
+        # remove emission_list from dictionary
+        details_json.pop('emissionsList', None)
+        self.fuel_raw = details_json
+        
+    def process_fuel_info(self):
+        
+        vehicle_dict = {"vehicle_id" : self.id}
+        vehicle_dict.update(self.fuel_raw)
+        
+        print(vehicle_dict)
+        
+        df = pd.DataFrame([vehicle_dict])
+        
+        print(f"DF HAS SHAPE: {df.shape}")
+        print(df.head())
+        
+        self.processed_df = df
+        
+        # print(f" check if emissionsList is inside the df")
+        # if 'emissionList' in df.columns:
+        #     print('it is!!!')
+        # else:
+        #     print(f"ID OF THE VEHICLE IS {df['vehicle_id']}")
+
     
 class Model:
     def __init__(self, name: str, make: str, year: int):
