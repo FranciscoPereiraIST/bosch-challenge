@@ -1,6 +1,5 @@
 import requests
 import pandas as pd
-import time
 
 def inspect_df(df: pd.DataFrame, name: str = "DataFrame", n: int = 5):
     """Prints basic info about a DataFrame: its name, shape, and head rows."""
@@ -282,15 +281,3 @@ class FuelEconomyETL:
         self.write_to_csv(df = self.emissions_df, filename = "Emissions", df_name = "emissions")
         self.write_to_csv(df = self.mpg_summary_df, filename = "MPG_Summary", df_name = "mpg_summary")
         self.write_to_csv(df = self.mpg_detail_df, filename = "MPG_Detail", df_name = "mpg_detail")
-        
-if __name__ == "__main__":
-    
-    start_time = time.time()  # start timer
-    
-    etl = FuelEconomyETL(num_years = 2)
-    # etl.run_all(filename="TEST")
-    etl.run_all()
-    
-    end_time = time.time()  # end timer
-    elapsed_time = end_time - start_time
-    print(f"\nTotal processing time for FuelEconomy source: {elapsed_time/60:.2f} minutes.")
