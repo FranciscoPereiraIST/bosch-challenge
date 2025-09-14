@@ -8,7 +8,7 @@ def main_2():
     
     time_before = perf_counter()
     
-    etl = FuelEconomyETL(num_years=2, concurrency=20)
+    etl = FuelEconomyETL(num_years=2, concurrency=10)
     asyncio.run(etl.run_all())
     
     duration_in_secs = perf_counter() - time_before

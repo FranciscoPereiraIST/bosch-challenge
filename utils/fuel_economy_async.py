@@ -192,7 +192,8 @@ class FuelEconomyETL:
         models = []
         for y in years:
             makes = await api.get_makes(y)
-            filtered_makes = makes[:20]  # limit for testing
+            # filtered_makes = makes[:20]  # limit for testing
+            filtered_makes = makes[:len(makes)]
             print(f"\t-Processing {len(filtered_makes)} makes for {y} - {filtered_makes}")
 
             for make in filtered_makes:
@@ -220,7 +221,7 @@ class FuelEconomyETL:
         print(f"Number of Vehicle_ids extracted = {total_vehicles}")
 
         processed_count = 0
-        next_print_percent = 10  # next milestone to print
+        next_print_percent = 25  # next milestone to print
 
         async def process_vehicle(vehicle):
             nonlocal processed_count, next_print_percent
@@ -247,7 +248,7 @@ class FuelEconomyETL:
             percent_complete = (processed_count / total_vehicles) * 100
             if percent_complete >= next_print_percent:
                 print(f"Processing: {int(percent_complete)}% complete ({processed_count}/{total_vehicles} vehicles)")
-                next_print_percent += 10  # increment to next milestone
+                next_print_percent += next_print_percent  # increment to next milestone
 
         # Run all vehicle tasks concurrently
         await asyncio.gather(*(process_vehicle(v) for v in self.vehicles))
