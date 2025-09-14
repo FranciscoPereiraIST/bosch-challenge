@@ -11,7 +11,8 @@ def inspect_df(df: pd.DataFrame, name: str = "DataFrame", n: int = 5):
     
 class FuelEconomyAPI:
     BASE_URL = "https://fueleconomy.gov/ws/rest/vehicle"
-    BASE_MPG_URL = "https://www.fueleconomy.gov/ws/rest/ympg/shared/ympgVehicle"
+    BASE_MPG_SUMMARY_URL = "https://www.fueleconomy.gov/ws/rest/ympg/shared/ympgVehicle"
+    BASE_MPG_DETAIL_URL = "https://www.fueleconomy.gov/ws/rest/ympg/shared/ympgDriverVehicle"
     HEADERS = {"Accept": "application/json"}
     ENDPOINTS = {
         "get_years": "/menu/year",
@@ -62,18 +63,16 @@ class FuelEconomyAPI:
             print(f"Vehicle details for {vehicle_id} not in JSON format")
             return None
         
-    def get_MPG_summary(self, vehicle_id: str) -> dict:
-        endpoint = f"{self.BASE_MPG_URL}/{vehicle_id}"
+    def get_MPG_summary(self, url: str, vehicle_id: str) -> dict:
+        endpoint = f"{url}/{vehicle_id}"
         r = requests.get(endpoint, headers=self.HEADERS)
-        
         if r.status_code == 204:
             print(f"No content returned for vehicle_id={vehicle_id}")
             return {}
-        
         try:
             return r.json()
         except ValueError:
-            print(f"MPG Summary for {vehicle_id} not in JSON format")
+            print(f"MPG info for {vehicle_id} not in JSON format")
             return None
         
 
@@ -86,14 +85,18 @@ class Vehicle:
         self.api = api_client
 
     def __repr__(self):
-        attributes_to_ignore = ["emissionsList", "fuel_raw", "api", "processed_df"]
+        attributes_to_ignore = ["emissionsList", "fuel_raw", "api", "processed_df", "emissions_df", "mpg_summary_df", "mpg_detail_df"]
         return " | ".join(f"{k} = '{v}'" for k, v in self.__dict__.items() if k not in attributes_to_ignore)
 
     def get_fuel_info(self):
         details_json = self.api.get_vehicle_details(self.id)
         self.emissionsList = details_json.pop("emissionsList", {})
         self.emissions_flag_exist = False
+        self.mpg_flag_summary_exist = False
+        self.mpg_flag_detail_exist = False
         self.emissions_df = None
+        self.mpg_summary_df = None
+        self.mpg_detail_df = None
         if self.emissionsList:
             self.emissions_flag_exist = True
             # print(f"EmissionsList type is {type(self.emissionsList)}, {self.emissionsList}")
@@ -112,10 +115,41 @@ class Vehicle:
             self.emissions_df = emissions_df
             
     def get_MPG_summary_info(self):
-        mpg_summary = self.api.get_MPG_summary(self.id)
+        mpg_summary = self.api.get_MPG_summary(url = self.api.BASE_MPG_SUMMARY_URL, vehicle_id = self.id)
+        
+        # print('mpg_summary', mpg_summary)
+        
         if len(mpg_summary) > 0:
-            print(mpg_summary)
-
+            self.mpg_flag_summary_exist = True
+            
+            # expected type is DICT
+            
+            # print(type(mpg_summary), len(mpg_summary), mpg_summary)
+        
+            self.mpg_summary_df = pd.DataFrame([mpg_summary])
+            inspect_df(self.mpg_summary_df, name='mpg')
+    
+    def get_MPG_detail_info(self):
+        mpg_detail = self.api.get_MPG_summary(url = self.api.BASE_MPG_DETAIL_URL, vehicle_id = self.id)
+        
+        # print('mpg_detail', mpg_detail)
+                
+        if mpg_detail is not None:
+            
+            # expected type is DICT
+            
+            self.mpg_flag_detail_exist = True
+            # print(type(mpg_detail), len(mpg_detail), mpg_detail)
+            
+            data = mpg_detail["yourMpgDriverVehicle"]
+            if not isinstance(data, list):
+                output = [data]
+            else:
+                output = data
+        
+            self.mpg_detail_df = pd.DataFrame(output)
+            inspect_df(self.mpg_detail_df, name='mpg_detail')
+            
 class Model:
     def __init__(self, name: str, make: str, year: int, api_client: FuelEconomyAPI):
         self.name = name
@@ -154,7 +188,7 @@ class FuelEconomyETL:
         for y in years:
             makes = self.api.get_makes(y)
             limit_flag = False
-            limit_val = 3
+            limit_val = 5
             if len(makes) > limit_val:
                 max_l = limit_val
                 limit_flag = True
@@ -178,14 +212,17 @@ class FuelEconomyETL:
             vids_array.extend(mdl.get_vehicle_ids())
             
         vids_array.append(Vehicle(31873, 2025, "test", "test model", self.api))
-
+        vids_array.append(Vehicle(26425, 2021, "Another_test", "test model 2", self.api))
+        
         self.vehicles = vids_array
 
     def process(self):
         
         print(f"Started Processing.....")
         df_array = []
-        df_emissions = []
+        df_emissions_array = []
+        df_mpg_summary_array = []
+        df_mpg_detail_array = []
         
         total_vehicles = len(self.vehicles) 
         
@@ -198,10 +235,18 @@ class FuelEconomyETL:
             vehicle.get_fuel_info()
             vehicle.process_fuel_info()
             df_array.append(vehicle.processed_df)
+            
             vehicle.process_emissions_list()
-            df_emissions.append(vehicle.emissions_df)
+            if vehicle.emissions_flag_exist:
+                df_emissions_array.append(vehicle.emissions_df)
             
             vehicle.get_MPG_summary_info()
+            if vehicle.mpg_flag_summary_exist:
+                df_mpg_summary_array.append(vehicle.mpg_summary_df)
+                
+            vehicle.get_MPG_detail_info()
+            if vehicle.mpg_flag_detail_exist:
+                df_mpg_detail_array.append(vehicle.mpg_detail_df)
             
             # Calculate percentage completed
             percent_complete = ((idx+1) / total_vehicles) * 100
@@ -210,24 +255,41 @@ class FuelEconomyETL:
                 print(f"\t-Vehicle {idx+1} - {vehicle}")
                 next_print += milestone
                 
-            if idx >= 4:
-                break
+            # if idx >= 4:
+            #     break
             
         self.df_fuel = pd.concat(df_array)
-        self.df_emissions = pd.concat(df_emissions)
+        
+        if any(curr_df is not None for curr_df in df_emissions_array):
+            self.emissions_df = pd.concat(df_emissions_array)
+        else:
+            self.emissions_df = None
+            
+        if any(curr_df is not None for curr_df in df_mpg_summary_array):
+            self.mpg_summary_df = pd.concat(df_mpg_summary_array)
+        else:
+            self.mpg_summary_df = None
+            
+        if any(curr_df is not None for curr_df in df_mpg_detail_array):
+            self.mpg_detail_df = pd.concat(df_mpg_detail_array)
+        else:
+            self.mpg_detail_df = None
 
     def write_to_csv(self, df : pd.DataFrame, filename : str, df_name : str = "DataFrame"):
-        current_time = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"raw_datasets/{filename}_{len(self.vehicles)}_vehicles_{current_time}.csv"
-        df.to_csv(filename, index=False)
-        print(f"Dataframe '{df_name}' written to file '{filename}' ({df.shape[0]} rows, {df.shape[1]} cols)")
+        if df is not None:
+            current_time = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"raw_datasets/{filename}_{len(self.vehicles)}_vehicles_{current_time}.csv"
+            df.to_csv(filename, index=False)
+            print(f"Dataframe '{df_name}' written to file '{filename}' ({df.shape[0]} rows, {df.shape[1]} cols)")
 
     def run_all(self):
         self.extract()
         self.process()
         self.write_to_csv(df = self.df_fuel, filename = "FuelEconomy", df_name = "fuel_info")
-        self.write_to_csv(df = self.df_emissions, filename = "Emissions", df_name = "emissions")
-
+        self.write_to_csv(df = self.emissions_df, filename = "Emissions", df_name = "emissions")
+        self.write_to_csv(df = self.mpg_summary_df, filename = "MPG_Summary", df_name = "mpg_summary")
+        self.write_to_csv(df = self.mpg_detail_df, filename = "MPG_Detail", df_name = "mpg_detail")
+        
 if __name__ == "__main__":
     
     start_time = time.time()  # start timer
