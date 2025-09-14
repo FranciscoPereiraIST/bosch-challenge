@@ -17,7 +17,8 @@ class SafetyAdministrationAPI:
     HEADERS = {"Accept": "application/json", "User-Agent": "MyApp/1.0"}
     ENDPOINTS = {
         "get_years": "/SafetyRatings",
-        "get_makes": "/SafetyRatings/modelyear"
+        "get_makes": "/SafetyRatings/modelyear",
+        "get_safety_ratings": "/SafetyRatings/VehicleId"
     }
 
     def __init__(self, session: aiohttp.ClientSession, semaphore: asyncio.Semaphore):
@@ -54,21 +55,21 @@ class SafetyAdministrationAPI:
         return years
 
     async def get_makes(self, year: int) -> list:
-        relative_url = f"/{year}"
+        relative_url = f"{year}"
         endpoint = f"{self.BASE_URL}{self.ENDPOINTS['get_makes']}/{relative_url}"
         data = await self._fetch_menu_items(endpoint)
         makes = [result["Make"] for result in data["Results"]]
         return makes
 
     async def get_models(self, year: int, make: str) -> list:
-        relative_url = f"/{year}/make/{make}"
+        relative_url = f"{year}/make/{make}"
         endpoint = f"{self.BASE_URL}{self.ENDPOINTS['get_makes']}/{relative_url}"
         data = await self._fetch_menu_items(endpoint)
         models = [result["Model"] for result in data["Results"]]
         return models
 
     async def get_vehicle_ids(self, year: int, make: str, model: str) -> list:
-        relative_url = f"/{year}/make/{make}/model/{model}"
+        relative_url = f"{year}/make/{make}/model/{model}"
         endpoint = f"{self.BASE_URL}{self.ENDPOINTS['get_makes']}/{relative_url}"
         data = await self._fetch_menu_items(endpoint)
         
@@ -79,9 +80,11 @@ class SafetyAdministrationAPI:
             
         return vehicle_dict
         
-    async def get_vehicle_details(self, vehicle_id: str) -> dict:
-        endpoint = f"{self.BASE_URL}/{vehicle_id}"
-        return await self._fetch(endpoint)
+    async def get_safety_ratings(self, vehicle_id: str) -> dict:
+        relative_url = f"{vehicle_id}"
+        endpoint = f"{self.BASE_URL}{self.ENDPOINTS['get_safety_ratings']}/{relative_url}"
+        data = await self._fetch_menu_items(endpoint)
+        return data["Results"]
 
     async def get_MPG_summary(self, url: str, vehicle_id: str) -> dict:
         endpoint = f"{url}/{vehicle_id}"
@@ -100,7 +103,12 @@ class Vehicle:
     def __repr__(self):
         attributes_to_ignore = ["emissionsList", "fuel_raw", "api", "processed_df", "emissions_df", "mpg_summary_df", "mpg_detail_df"]
         return " | ".join(f"{k} = '{v}'" for k, v in self.__dict__.items() if k not in attributes_to_ignore)
-
+    
+    async def get_safety_ratings(self):
+        safety_ratings = await self.api.get_safety_ratings(self.id)
+        df_ratings = pd.DataFrame(safety_ratings)
+        self.df_safety_ratings = df_ratings
+    
     async def get_fuel_info(self):
         details_json = await self.api.get_vehicle_details(self.id)
         if not details_json:
@@ -231,7 +239,8 @@ class SafetyAdministrationETL:
 
     async def process(self):
         print(f"Started Processing.....")
-        df_array, df_emissions_array, df_mpg_summary_array, df_mpg_detail_array = [], [], [], []
+        df_ratings_array = []
+        # df_array, df_emissions_array, df_mpg_summary_array, df_mpg_detail_array = [], [], [], []
         total_vehicles = len(self.vehicles)
         print(f"Number of Vehicle_ids extracted = {total_vehicles}")
 
@@ -242,21 +251,22 @@ class SafetyAdministrationETL:
             nonlocal processed_count, next_print_percent
 
             # Fetch and process data
-            await vehicle.get_fuel_info()
-            vehicle.process_fuel_info()
-            df_array.append(vehicle.processed_df)
+            await vehicle.get_safety_ratings()
+            # await vehicle.get_fuel_info()
+            # vehicle.process_fuel_info()
+            df_ratings_array.append(vehicle.df_safety_ratings)
 
-            vehicle.process_emissions_list()
-            if vehicle.emissions_flag_exist:
-                df_emissions_array.append(vehicle.emissions_df)
+            # vehicle.process_emissions_list()
+            # if vehicle.emissions_flag_exist:
+            #     df_emissions_array.append(vehicle.emissions_df)
 
-            await vehicle.get_MPG_summary_info()
-            if vehicle.mpg_flag_summary_exist:
-                df_mpg_summary_array.append(vehicle.mpg_summary_df)
+            # await vehicle.get_MPG_summary_info()
+            # if vehicle.mpg_flag_summary_exist:
+            #     df_mpg_summary_array.append(vehicle.mpg_summary_df)
 
-            await vehicle.get_MPG_detail_info()
-            if vehicle.mpg_flag_detail_exist:
-                df_mpg_detail_array.append(vehicle.mpg_detail_df)
+            # await vehicle.get_MPG_detail_info()
+            # if vehicle.mpg_flag_detail_exist:
+            #     df_mpg_detail_array.append(vehicle.mpg_detail_df)
 
             # Update counter and check for milestone prints
             processed_count += 1
@@ -269,10 +279,10 @@ class SafetyAdministrationETL:
         await asyncio.gather(*(process_vehicle(v) for v in self.vehicles))
 
         # Concatenate DataFrames
-        self.df_fuel = await self._safe_concat(df_array)
-        self.emissions_df = await self._safe_concat(df_emissions_array)
-        self.mpg_summary_df = await self._safe_concat(df_mpg_summary_array)
-        self.mpg_detail_df = await self._safe_concat(df_mpg_detail_array)
+        self.df_safety_ratings = await self._safe_concat(df_ratings_array)
+        # self.emissions_df = await self._safe_concat(df_emissions_array)
+        # self.mpg_summary_df = await self._safe_concat(df_mpg_summary_array)
+        # self.mpg_detail_df = await self._safe_concat(df_mpg_detail_array)
 
     def write_to_csv(self, df: pd.DataFrame, filename: str, df_name: str = "DataFrame"):
         if df is not None:
@@ -293,9 +303,9 @@ class SafetyAdministrationETL:
                 if idx > 10:
                     break
                 
-            # await self.process()
+            await self.process()
 
-            # self.write_to_csv(df=self.df_fuel, filename="NEW_FuelEconomy", df_name="fuel_info")
+            self.write_to_csv(df=self.df_safety_ratings, filename="SafetyRatings", df_name="df_safety_ratings")
             # self.write_to_csv(df=self.emissions_df, filename="NEW_Emissions", df_name="emissions")
             # self.write_to_csv(df=self.mpg_summary_df, filename="NEW_MPG_Summary", df_name="mpg_summary")
             # self.write_to_csv(df=self.mpg_detail_df, filename="NEW_MPG_Detail", df_name="mpg_detail")
