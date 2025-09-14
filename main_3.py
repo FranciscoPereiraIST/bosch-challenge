@@ -174,6 +174,14 @@ class FuelEconomyETL:
         self.vehicles = []
         self.num_years =  num_years
         # self.filename = filename
+        
+    def _safe_concat(self, df_list):
+        """Concatenate non-None DataFrames or return None if all are None."""
+        
+        if any(curr_df is not None for curr_df in df_list):
+            return pd.concat(df_list)
+        else:
+            return None
 
     def extract(self):
         
@@ -188,7 +196,7 @@ class FuelEconomyETL:
         for y in years:
             makes = self.api.get_makes(y)
             limit_flag = False
-            limit_val = 5
+            limit_val = 3
             if len(makes) > limit_val:
                 max_l = limit_val
                 limit_flag = True
@@ -254,26 +262,11 @@ class FuelEconomyETL:
                 print(f"Processing: {int(percent_complete)}% complete ({idx+1}/{total_vehicles} vehicles)")
                 print(f"\t-Vehicle {idx+1} - {vehicle}")
                 next_print += milestone
-                
-            # if idx >= 4:
-            #     break
-            
-        self.df_fuel = pd.concat(df_array)
         
-        if any(curr_df is not None for curr_df in df_emissions_array):
-            self.emissions_df = pd.concat(df_emissions_array)
-        else:
-            self.emissions_df = None
-            
-        if any(curr_df is not None for curr_df in df_mpg_summary_array):
-            self.mpg_summary_df = pd.concat(df_mpg_summary_array)
-        else:
-            self.mpg_summary_df = None
-            
-        if any(curr_df is not None for curr_df in df_mpg_detail_array):
-            self.mpg_detail_df = pd.concat(df_mpg_detail_array)
-        else:
-            self.mpg_detail_df = None
+        self.df_fuel = self._safe_concat(df_array)
+        self.emissions_df = self._safe_concat(df_emissions_array)
+        self.mpg_summary_df = self._safe_concat(df_mpg_summary_array)
+        self.mpg_detail_df = self._safe_concat(df_mpg_detail_array)
 
     def write_to_csv(self, df : pd.DataFrame, filename : str, df_name : str = "DataFrame"):
         if df is not None:
