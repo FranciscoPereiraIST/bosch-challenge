@@ -292,21 +292,21 @@ class Model:
     def get_recall_info(self):
         return self.df_recalls
     
-    def process_products(self, complaints: list):
+    def process_products(self, complaint: json):
         
-        if len(complaints)==0:
-            print(len(complaints), self.year, self.make, self.name)
+        # if len(complaints)==0:
+        #     print(len(complaints), self.year, self.make, self.name)
         
         products_detail = None
-        if isinstance(complaints, list):
-            if isinstance(complaints[0]['products'], list):
-                for elem in complaints[0]['products']:
-                    if elem['type'] == 'Vehicle':
-                        products_detail = {}
-                        for k, v in elem.items():
-                            products_detail[k] = v
+        # if isinstance(complaints, list):
+        #     if isinstance(complaints[0]['products'], list):
+        for elem in complaint['products']:
+            if elem['type'] == 'Vehicle':
+                products_detail = {}
+                for k, v in elem.items():
+                    products_detail[k] = v
         
-        print(products_detail)
+        # print(f"Product Details: {products_detail}")
         return products_detail
         # print(complaints_json)
 
@@ -314,30 +314,34 @@ class Model:
         complaints = await self.api.get_complaints(self.year, self.make, self.name)
         if self.api.complaints_exist:
             
+            print('INSIDE get_complaints')
+            
             # print(complaints)
+            comps_array = []
+            for compl in complaints:
+                products_info = self.process_products(compl)
+                data_dict = compl
+                # print('data_dict', type(data_dict), data_dict)
+                data_dict.pop('products', None)
+                # print('data_dict after PRODUCTS removed', type(data_dict), data_dict)
+                data_dict.update(products_info)
+                # print("\n", 'complaints', type(complaints), complaints, '\n')
+                # print("\n", 'products_info', type(products_info), products_info, '\n')
+                # print("\n", 'data_dict', type(data_dict), data_dict)
+                df_complaints = pd.DataFrame([data_dict]) #if products_info and isinstance(complaints, list) else None
+                comps_array.append(df_complaints)
+                
+            print(f'complaints array {type(comps_array)}:', type(comps_array[0])) if self.make == 'TESLA' else None
+                
+            # inspect_df(df_complaints)
+            self.complaints_array = comps_array
             
-            products_info = self.process_products(complaints)
-            data_dict = complaints[0]
-            data = data_dict.update(products_info)
-            
-            print('complaints', type(complaints), complaints, '\n')
-
-            print('products_info', type(products_info), products_info, '\n')
-            print('data', type(data), data)
-            
-            import sys
-            sys.exit()
-            
-            df_complaints = pd.DataFrame(data) if products_info and isinstance(complaints, list) else None
-            df_complaints.drop(columns='products', axis=1, inplace=True) if 'products' in df_complaints.columns else None
-            
-            inspect_df(df_complaints)
-            self.df_complaints = df_complaints
         else:
-            self.df_complaints = None
+            self.complaints_array = []
         
     def get_complaints_info(self):
-        return self.df_complaints
+        # return self.df_complaints
+        return self.complaints_array
     
     def __repr__(self):
         return f"{self.year} - {self.make} - {self.name} with {len(self.vehicles)} vehicle_ids"
@@ -355,6 +359,13 @@ class SafetyAdministrationETL:
             return pd.concat(df_list)
         else:
             return None
+        
+    async def _reorder_dataframe(self, df : pd.DataFrame, first_columns : list):
+        # new_order = ['manufacturer', 'type', 'productYear', 'productMake', 'productModel', 'odiNumber']
+        # print([c for c in self.df_complaints.columns if c not in new_order])
+        first_columns.extend([c for c in df.columns if c not in first_columns])
+        return df[first_columns]
+    
 
     async def extract(self, api: SafetyAdministrationAPI, dataset : str):
         print(f"Started Extracting for dataset {dataset}.....")
@@ -481,19 +492,22 @@ class SafetyAdministrationETL:
     async def process_complaints(self):
         print(f"Started Processing Complaints.....")
         df_complaints = []
-
+            
         async def process_model(model):
             # Fetch and process data
             await model.get_complaints()
-            df_complaints.append(model.get_complaints_info())
+            data = model.get_complaints_info()
+            df_complaints.extend(data) if len(data)>0 else None
 
-        # Run all vehicle tasks concurrently
+        # Run all model tasks concurrently
         await asyncio.gather(*(process_model(m) for m in self.models['complaints']))
 
         # Concatenate DataFrames
-        self.df_complaints = await self._safe_concat(df_complaints)
+        df = await self._safe_concat(df_complaints)
+        # REORDER THE COLUMNS
+        self.df_complaints = await self._reorder_dataframe(df, ['odiNumber', 'manufacturer', 'type', 'productYear', 'productMake', 'productModel'])        
         
-        inspect_df(self.df_complaints, 'df_complaints')
+        # inspect_df(self.df_complaints, 'df_complaints')
 
     def write_to_csv(self, df: pd.DataFrame, filename: str, df_name: str = "DataFrame"):
         if df is not None:
@@ -529,5 +543,5 @@ class SafetyAdministrationETL:
 
             # self.write_to_csv(df=self.df_safety_ratings, filename="SafetyRatings", df_name="df_safety_ratings")
             # self.write_to_csv(df=self.df_recalls, filename="Recalls", df_name="df_recalls")
-            # self.write_to_csv(df=self.df_complaints, filename="Complaints", df_name="df_complaints")
+            self.write_to_csv(df=self.df_complaints, filename="Complaints", df_name="df_complaints")
             # self.write_to_csv(df=self.mpg_detail_df, filename="NEW_MPG_Detail", df_name="mpg_detail")
