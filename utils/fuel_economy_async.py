@@ -1,7 +1,7 @@
 import asyncio
 import aiohttp  # async replacement for requests
 import pandas as pd
-import sys
+import os
 
 def inspect_df(df: pd.DataFrame, name: str = "DataFrame", n: int = 5):
     """Prints basic info about a DataFrame: its name, shape, and head rows."""
@@ -293,7 +293,14 @@ class FuelEconomyETL:
     def write_to_csv(self, df: pd.DataFrame, filename: str, df_name: str = "DataFrame"):
         if df is not None:
             current_time = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"raw_datasets/{filename}_{len(self.vehicles)}_vehicles_{current_time}.csv"
+            
+            folder_name = "extracted_data/FuelEconomy"
+            
+            os.makedirs(folder_name) if not os.path.isdir(folder_name) else None
+            
+            # filename = f"{folder_name}/{filename}_{len(self.vehicles)}_vehicles_{current_time}.csv"
+            filename = f"{folder_name}/{filename}_{current_time}.csv"
+
             df.to_csv(filename, index=False)
             print(f"Dataframe '{df_name}' written to file '{filename}' ({df.shape[0]} rows, {df.shape[1]} cols)")
 
@@ -305,7 +312,7 @@ class FuelEconomyETL:
             await self.extract(api)
             await self.process()
 
-            self.write_to_csv(df=self.df_fuel, filename="NEW_FuelEconomy", df_name="fuel_info")
-            self.write_to_csv(df=self.emissions_df, filename="NEW_Emissions", df_name="emissions")
-            self.write_to_csv(df=self.mpg_summary_df, filename="NEW_MPG_Summary", df_name="mpg_summary")
-            self.write_to_csv(df=self.mpg_detail_df, filename="NEW_MPG_Detail", df_name="mpg_detail")
+            self.write_to_csv(df=self.df_fuel, filename="FuelEconomy", df_name="fuel_info")
+            self.write_to_csv(df=self.emissions_df, filename="Emissions", df_name="emissions")
+            self.write_to_csv(df=self.mpg_summary_df, filename="MPG_Summary", df_name="mpg_summary")
+            self.write_to_csv(df=self.mpg_detail_df, filename="MPG_Detail", df_name="mpg_detail")

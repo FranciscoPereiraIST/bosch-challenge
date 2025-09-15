@@ -29,7 +29,8 @@ class SafetyAdministrationAPI:
         "get_years_recalls":"/products/vehicle/modelYears",
         "get_makes_recalls":"/products/vehicle/makes",
         "get_models_recalls":"/products/vehicle/models",
-        "get_complaints": "/complaints/complaintsByVehicle"
+        "get_complaints": "/complaints/complaintsByVehicle",
+        "get_seat_inspection_locations": "/CSSIStation/state"
     }
     
     ENDPOINTS_DICT = {"years" : {"ratings" : ENDPOINTS["get_years"], 
@@ -185,9 +186,19 @@ class SafetyAdministrationAPI:
         else:
             return None
 
-    async def get_MPG_summary(self, url: str, vehicle_id: str) -> dict:
-        endpoint = f"{url}/{vehicle_id}"
-        return await self._fetch(endpoint)
+    async def get_inspection_locations(self, state: str) -> dict:
+    
+        endpoint = f"{self.BASE_URL}{self.ENDPOINTS['get_seat_inspection_locations']}/{state}"
+        params = None
+            
+        data = await self._fetch_menu_items(endpoint, params=params)
+        
+        if data["Count"] > 0:
+            # print('GOT RESULTS for state', state)
+            return data["Results"]
+        else:
+            # print('GOT NO RESULTS for state', state)
+            return None
 
 
 class Vehicle:
@@ -250,24 +261,6 @@ class Vehicle:
             #     print(len(self.emissionsList), isinstance(self.emissionsList, list), isinstance(self.emissionsList, dict))
             #     print(self.emissionsList["emissionsInfo"], "\n", f"VEHICLE {self.id}", e)
             #     sys.exit()
-
-    async def get_MPG_summary_info(self):
-        mpg_summary = await self.api.get_MPG_summary(url=self.api.BASE_MPG_SUMMARY_URL, vehicle_id=self.id)
-        if mpg_summary:
-            self.mpg_flag_summary_exist = True
-            self.mpg_summary_df = pd.DataFrame([mpg_summary])
-
-    async def get_MPG_detail_info(self):
-        mpg_detail = await self.api.get_MPG_summary(url=self.api.BASE_MPG_DETAIL_URL, vehicle_id=self.id)
-        if mpg_detail and "yourMpgDriverVehicle" in mpg_detail:
-            self.mpg_flag_detail_exist = True
-            data = mpg_detail["yourMpgDriverVehicle"]
-            if not isinstance(data, list):
-                output = [data]
-            else:
-                output = data
-            self.mpg_detail_df = pd.DataFrame(output)
-
 
 class Model:
     def __init__(self, name: str, make: str, year: int, api_client: SafetyAdministrationAPI):
@@ -413,7 +406,33 @@ class SafetyAdministrationETL:
         # self.models = {}
         self.vehicles[dataset] = vids_array
         self.models[dataset] = models
-
+        
+    async def extract_inspection_locations(self, api: SafetyAdministrationAPI):
+        
+        states = [
+        "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+        "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+        "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+        "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+        "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+        ]
+        
+        results = await asyncio.gather(*(api.get_inspection_locations(state) for state in states))
+        
+        # Flatten results, ignoring None and exceptions
+        locs_array = []
+        for res in results:
+            if isinstance(res, Exception):
+                print(f"Error: {res}")  # or log properly
+            elif res:
+                locs_array.extend(res)
+                
+        df_inspections = pd.DataFrame(locs_array)
+        df_inspections = await self._reorder_dataframe(df_inspections, ['State','City', 'Zip','Organization']) 
+        inspect_df(df_inspections)
+        
+        self.df_inspections = df_inspections
+     
     async def process(self):
         print(f"Started Processing.....")
         df_ratings_array, df_recalls = [], []
@@ -429,23 +448,7 @@ class SafetyAdministrationETL:
 
             # Fetch and process data
             await vehicle.get_safety_ratings()
-            # await vehicle.get_recalls()
-            # await vehicle.get_fuel_info()
-            # vehicle.process_fuel_info()
             df_ratings_array.append(vehicle.df_safety_ratings)
-            # df_recalls.append(vehicle.df_recalls)
-
-            # vehicle.process_emissions_list()
-            # if vehicle.emissions_flag_exist:
-            #     df_emissions_array.append(vehicle.emissions_df)
-
-            # await vehicle.get_MPG_summary_info()
-            # if vehicle.mpg_flag_summary_exist:
-            #     df_mpg_summary_array.append(vehicle.mpg_summary_df)
-
-            # await vehicle.get_MPG_detail_info()
-            # if vehicle.mpg_flag_detail_exist:
-            #     df_mpg_detail_array.append(vehicle.mpg_detail_df)
 
             # Update counter and check for milestone prints
             processed_count += 1
@@ -459,17 +462,8 @@ class SafetyAdministrationETL:
 
         # Concatenate DataFrames
         self.df_safety_ratings = await self._safe_concat(df_ratings_array)
-        # self.df_recalls = await self._safe_concat(df_recalls)
         
         inspect_df(self.df_safety_ratings, 'ratings_df')
-        
-        # inspect_df(self.df_recalls, 'recalls_df')
-        
-        
-        # self.emissions_df = await self._safe_concat(df_emissions_array)
-        # self.mpg_summary_df = await self._safe_concat(df_mpg_summary_array)
-        # self.mpg_detail_df = await self._safe_concat(df_mpg_detail_array)
-        
     
     async def process_recalls(self):
         print(f"Started Processing Recalls.....")
@@ -513,7 +507,7 @@ class SafetyAdministrationETL:
         if df is not None:
             current_time = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
             
-            folder_name = "raw_datasets/NHTSafetyAdministration"
+            folder_name = "extracted_data/NHTSafetyAdministration"
             
             os.makedirs(folder_name) if not os.path.isdir(folder_name) else None
             
@@ -528,20 +522,17 @@ class SafetyAdministrationETL:
             semaphore = asyncio.Semaphore(self.concurrency)
             api = SafetyAdministrationAPI(session, semaphore)
 
-            # await self.extract(api, dataset = 'ratings')
-            # await self.extract(api, dataset = 'recalls')
+            await self.extract(api, dataset = 'ratings')
+            await self.extract(api, dataset = 'recalls')
             await self.extract(api, dataset = 'complaints')
-            
-            # for idx, car in enumerate(self.vehicles):
-            #     print(f"Vehicle {idx+1} -> {car}")
-            #     if idx > 10:
-            #         break
+            await self.extract_inspection_locations(api)
                 
-            # await self.process()
-            # await self.process_recalls()
+            await self.process()
+            await self.process_recalls()
             await self.process_complaints()
 
-            # self.write_to_csv(df=self.df_safety_ratings, filename="SafetyRatings", df_name="df_safety_ratings")
-            # self.write_to_csv(df=self.df_recalls, filename="Recalls", df_name="df_recalls")
+            self.write_to_csv(df=self.df_safety_ratings, filename="SafetyRatings", df_name="df_safety_ratings")
+            self.write_to_csv(df=self.df_recalls, filename="Recalls", df_name="df_recalls")
             self.write_to_csv(df=self.df_complaints, filename="Complaints", df_name="df_complaints")
-            # self.write_to_csv(df=self.mpg_detail_df, filename="NEW_MPG_Detail", df_name="mpg_detail")
+            self.write_to_csv(df=self.df_inspections, filename="InspectionsLocation", df_name="df_inspections")
+            
