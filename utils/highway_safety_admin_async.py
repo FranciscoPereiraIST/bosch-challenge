@@ -2,6 +2,7 @@ import asyncio
 import aiohttp  # async replacement for requests
 import pandas as pd
 import os
+import json
 
 def inspect_df(df: pd.DataFrame, name: str = "DataFrame", n: int = 5):
     
@@ -27,22 +28,27 @@ class SafetyAdministrationAPI:
         "get_recalls": "/recalls/recallsByVehicle",
         "get_years_recalls":"/products/vehicle/modelYears",
         "get_makes_recalls":"/products/vehicle/makes",
-        "get_models_recalls":"/products/vehicle/models"
+        "get_models_recalls":"/products/vehicle/models",
+        "get_complaints": "/complaints/complaintsByVehicle"
     }
     
     ENDPOINTS_DICT = {"years" : {"ratings" : ENDPOINTS["get_years"], 
-                                "recalls": ENDPOINTS["get_years_recalls"]
+                                "recalls": ENDPOINTS["get_years_recalls"], 
+                                "complaints": ENDPOINTS["get_years_recalls"]
                         },
                       "makes" : {"ratings" : ENDPOINTS["get_makes"], 
-                                "recalls": ENDPOINTS["get_makes_recalls"]
+                                "recalls": ENDPOINTS["get_makes_recalls"], 
+                                "complaints": ENDPOINTS["get_makes_recalls"]
                         },
                       "models" : {"ratings" : ENDPOINTS["get_makes"], 
-                                "recalls": ENDPOINTS["get_models_recalls"]
+                                "recalls": ENDPOINTS["get_models_recalls"], 
+                                "complaints": ENDPOINTS["get_models_recalls"]
                         },
     }
     
     results_naming = {"ratings" : {'results' : 'Results', 'year':'ModelYear', 'make' : 'Make', 'model' : 'Model'}, 
-                       "recalls": {'results' : 'results', 'year':'modelYear', 'make' : 'make', 'model' : 'model'},
+                       "recalls": {'results' : 'results', 'year':'modelYear', 'make' : 'make', 'model' : 'model', 'issueType' : 'r'},
+                       "complaints": {'results' : 'results', 'year':'modelYear', 'make' : 'make', 'model' : 'model', 'issueType' : 'c'},
     }
 
     def __init__(self, session: aiohttp.ClientSession, semaphore: asyncio.Semaphore):
@@ -63,6 +69,9 @@ class SafetyAdministrationAPI:
                 if r.status == 204:
                     print(f"Response from {url} sent status {r.status}")
                     return None
+                elif r.status == 403:
+                    print(f"Response from {url} sent status {r.status}")
+                    return None
                 try:
                     return await r.json()
                 except Exception:
@@ -76,8 +85,8 @@ class SafetyAdministrationAPI:
     async def get_years(self, dataset) -> list:
         # endpoint = f"{self.BASE_URL}{self.ENDPOINTS['get_years']}"
         
-        if dataset == 'recalls':
-            params = {'issueType': 'r'}
+        if dataset in ('recalls', 'complaints'):
+            params = {'issueType': self.results_naming[dataset]['issueType']}
         else:
             params=None
             
@@ -92,8 +101,8 @@ class SafetyAdministrationAPI:
 
     async def get_makes(self, year: int, dataset : str) -> list:
         
-        if dataset == 'recalls':
-            params = {'issueType': 'r'
+        if dataset in ('recalls', 'complaints'):
+            params = {'issueType': self.results_naming[dataset]['issueType']
                       , 'modelYear' : year}
             endpoint_enriched =  f"{self.BASE_URL}{self.ENDPOINTS_DICT['makes'][dataset]}"
         elif dataset == 'ratings':
@@ -117,8 +126,8 @@ class SafetyAdministrationAPI:
 
     async def get_models(self, year: int, make: str, dataset : str) -> list:
         
-        if dataset == 'recalls':
-            params = {'issueType': 'r'
+        if dataset in ('recalls', 'complaints'):
+            params = {'issueType': self.results_naming[dataset]['issueType']
                       , 'modelYear' : year
                       , 'make' : make}
             
@@ -164,6 +173,17 @@ class SafetyAdministrationAPI:
         params = {"make" : make, "model" : model, "modelYear" : year}
         data = await self._fetch_menu_items(endpoint, params=params)
         return data["results"]
+    
+    async def get_complaints(self, year: int, make: str, model: str) -> list:
+        endpoint = f"{self.BASE_URL}{self.ENDPOINTS['get_complaints']}"
+        params = {"make" : make, "model" : model, "modelYear" : year}
+        data = await self._fetch_menu_items(endpoint, params=params)
+        self.complaints_exist = False
+        if data["count"] > 0:
+            self.complaints_exist = True
+            return data["results"]
+        else:
+            return None
 
     async def get_MPG_summary(self, url: str, vehicle_id: str) -> dict:
         endpoint = f"{url}/{vehicle_id}"
@@ -271,7 +291,54 @@ class Model:
         
     def get_recall_info(self):
         return self.df_recalls
+    
+    def process_products(self, complaints: list):
+        
+        if len(complaints)==0:
+            print(len(complaints), self.year, self.make, self.name)
+        
+        products_detail = None
+        if isinstance(complaints, list):
+            if isinstance(complaints[0]['products'], list):
+                for elem in complaints[0]['products']:
+                    if elem['type'] == 'Vehicle':
+                        products_detail = {}
+                        for k, v in elem.items():
+                            products_detail[k] = v
+        
+        print(products_detail)
+        return products_detail
+        # print(complaints_json)
 
+    async def get_complaints(self):
+        complaints = await self.api.get_complaints(self.year, self.make, self.name)
+        if self.api.complaints_exist:
+            
+            # print(complaints)
+            
+            products_info = self.process_products(complaints)
+            data_dict = complaints[0]
+            data = data_dict.update(products_info)
+            
+            print('complaints', type(complaints), complaints, '\n')
+
+            print('products_info', type(products_info), products_info, '\n')
+            print('data', type(data), data)
+            
+            import sys
+            sys.exit()
+            
+            df_complaints = pd.DataFrame(data) if products_info and isinstance(complaints, list) else None
+            df_complaints.drop(columns='products', axis=1, inplace=True) if 'products' in df_complaints.columns else None
+            
+            inspect_df(df_complaints)
+            self.df_complaints = df_complaints
+        else:
+            self.df_complaints = None
+        
+    def get_complaints_info(self):
+        return self.df_complaints
+    
     def __repr__(self):
         return f"{self.year} - {self.make} - {self.name} with {len(self.vehicles)} vehicle_ids"
 
@@ -410,6 +477,23 @@ class SafetyAdministrationETL:
         self.df_recalls = await self._safe_concat(df_recalls)
         
         inspect_df(self.df_recalls, 'recalls_df')
+        
+    async def process_complaints(self):
+        print(f"Started Processing Complaints.....")
+        df_complaints = []
+
+        async def process_model(model):
+            # Fetch and process data
+            await model.get_complaints()
+            df_complaints.append(model.get_complaints_info())
+
+        # Run all vehicle tasks concurrently
+        await asyncio.gather(*(process_model(m) for m in self.models['complaints']))
+
+        # Concatenate DataFrames
+        self.df_complaints = await self._safe_concat(df_complaints)
+        
+        inspect_df(self.df_complaints, 'df_complaints')
 
     def write_to_csv(self, df: pd.DataFrame, filename: str, df_name: str = "DataFrame"):
         if df is not None:
@@ -430,18 +514,20 @@ class SafetyAdministrationETL:
             semaphore = asyncio.Semaphore(self.concurrency)
             api = SafetyAdministrationAPI(session, semaphore)
 
-            await self.extract(api, dataset = 'ratings')
-            await self.extract(api, dataset = 'recalls')
+            # await self.extract(api, dataset = 'ratings')
+            # await self.extract(api, dataset = 'recalls')
+            await self.extract(api, dataset = 'complaints')
             
             # for idx, car in enumerate(self.vehicles):
             #     print(f"Vehicle {idx+1} -> {car}")
             #     if idx > 10:
             #         break
                 
-            await self.process()
-            await self.process_recalls()
+            # await self.process()
+            # await self.process_recalls()
+            await self.process_complaints()
 
-            self.write_to_csv(df=self.df_safety_ratings, filename="SafetyRatings", df_name="df_safety_ratings")
-            self.write_to_csv(df=self.df_recalls, filename="Recalls", df_name="df_recalls")
-            # self.write_to_csv(df=self.mpg_summary_df, filename="NEW_MPG_Summary", df_name="mpg_summary")
+            # self.write_to_csv(df=self.df_safety_ratings, filename="SafetyRatings", df_name="df_safety_ratings")
+            # self.write_to_csv(df=self.df_recalls, filename="Recalls", df_name="df_recalls")
+            # self.write_to_csv(df=self.df_complaints, filename="Complaints", df_name="df_complaints")
             # self.write_to_csv(df=self.mpg_detail_df, filename="NEW_MPG_Detail", df_name="mpg_detail")
