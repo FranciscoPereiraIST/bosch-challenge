@@ -8,16 +8,16 @@ import asyncio
 
 def main():
     
+    # time_before = perf_counter()
+    
+    # etl = FuelEconomyETL(num_years=2, concurrency=10)
+    # asyncio.run(etl.run_all())
+    
+    # duration_in_secs = perf_counter() - time_before
+    # print(f"Total time (FuelEconomy): {duration_in_secs:.3f} s -> {duration_in_secs/60:.1f} min")
+    
     time_before = perf_counter()
-    
-    etl = FuelEconomyETL(num_years=1, concurrency=10)
-    asyncio.run(etl.run_all())
-    
-    duration_in_secs = perf_counter() - time_before
-    print(f"Total time (FuelEconomy): {duration_in_secs:.3f} s -> {duration_in_secs/60:.1f} min")
-    
-    time_before = perf_counter()
-    etl_nhtsa = SafetyAdministrationETL(num_years=1, concurrency=10)
+    etl_nhtsa = SafetyAdministrationETL(num_years=2, concurrency=10)
     asyncio.run(etl_nhtsa.run_all())
     duration_in_secs = perf_counter() - time_before
     print(f"Total time (NHTSafetyAdmin): {duration_in_secs:.3f} s -> {duration_in_secs/60:.1f} min")

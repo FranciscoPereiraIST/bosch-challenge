@@ -209,8 +209,8 @@ class FuelEconomyETL:
             vids_array.extend(mdl.get_vehicle_ids())
 
         # add test vehicles
-        vids_array.append(Vehicle(31873, 2025, "test", "test model", api))
-        vids_array.append(Vehicle(26425, 2021, "Another_test", "test model 2", api))
+        # vids_array.append(Vehicle(31873, 2025, "test", "test model", api))
+        # vids_array.append(Vehicle(26425, 2021, "Another_test", "test model 2", api))
 
         self.vehicles = vids_array
 

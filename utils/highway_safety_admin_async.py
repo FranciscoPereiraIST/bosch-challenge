@@ -157,10 +157,17 @@ class SafetyAdministrationAPI:
         
         vehicle_dict = {}
 
-        for r in data["Results"]:
-            vehicle_dict[r['VehicleId']] = r['VehicleDescription']
+        try:
+            for r in data["Results"]:
+                vehicle_dict[r['VehicleId']] = r['VehicleDescription']
+            return vehicle_dict
+        except Exception as e:
+            print(f"Error fetching vehicle_ids for Model({year},{make},{model}) -> {e}")
             
-        return vehicle_dict
+            # import sys
+            # sys.exit()
+            
+            return {}
         
     async def get_safety_ratings(self, vehicle_id: str) -> dict:
         relative_url = f"{vehicle_id}"
@@ -306,9 +313,7 @@ class Model:
     async def get_complaints(self):
         complaints = await self.api.get_complaints(self.year, self.make, self.name)
         if self.api.complaints_exist:
-            
-            print('INSIDE get_complaints')
-            
+                
             # print(complaints)
             comps_array = []
             for compl in complaints:
@@ -324,7 +329,7 @@ class Model:
                 df_complaints = pd.DataFrame([data_dict]) #if products_info and isinstance(complaints, list) else None
                 comps_array.append(df_complaints)
                 
-            print(f'complaints array {type(comps_array)}:', type(comps_array[0])) if self.make == 'TESLA' else None
+            # print(f'complaints array {type(comps_array)}:', type(comps_array[0])) if self.make == 'TESLA' else None
                 
             # inspect_df(df_complaints)
             self.complaints_array = comps_array
@@ -384,10 +389,10 @@ class SafetyAdministrationETL:
         
         print(f"\t-Dataset '{dataset}' -> Extracted {len(models)} models.")
                 
-        for idx, mdl in enumerate(models):
-            print(f"Model {idx+1} -> {mdl}")
-            if idx > 20:
-                break
+        # for idx, mdl in enumerate(models):
+        #     print(f"Model {idx+1} -> {mdl}")
+        #     if idx > 20:
+        #         break
 
         vids_array = []
         if dataset == 'ratings':
