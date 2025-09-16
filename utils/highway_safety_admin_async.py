@@ -70,17 +70,60 @@ class SafetyAdministrationAPI:
                 if r.status == 204:
                     print(f"Response from {url} sent status {r.status}")
                     return None
+                
                 elif r.status == 403:
                     print(f"Response from {url} sent status {r.status}")
                     return None
+                
                 try:
                     return await r.json()
                 except Exception:
                     print(f"Response from {url} not in JSON format")
                     return None
 
+    async def _fetch_new_version(self, url: str, params: dict = None, retries: int = 3, delay: float = 0.5) -> dict | None:
+        """
+        Core async request method with retry/backoff.
+        """
+        async with self.semaphore:
+            for attempt in range(retries):
+                if attempt > 0:
+                    # Backoff between retries
+                    wait = 2 ** attempt
+                    print(f"Retrying {url} after {wait}s...")
+                    await asyncio.sleep(wait)
+                else:
+                    # Optional small delay even before first call
+                    await asyncio.sleep(delay)
+
+                async with self.session.get(url, headers=self.HEADERS, params=params) as r:
+                    status = r.status
+
+                    if status == 200:
+                        try:
+                            return await r.json()
+                        except Exception:
+                            print(f"Response from {url} not in JSON format")
+                            return None
+
+                    elif status == 204:
+                        print(f"No content (204) from {url} and params {params}")
+                        return None
+
+                    elif status == 403:
+                        print(f"403 from {url} and params {params}, attempt {attempt+1}/{retries}")
+                        continue  # retry after backoff
+
+                    else:
+                        # print(f"Unexpected {status} from {url} and params {params}")
+                        return None
+
+            print(f"Giving up on {url} after {retries} retries")
+            return None
+
     async def _fetch_menu_items(self, endpoint: str, params: dict = None) -> list:
-        data = await self._fetch(endpoint, params=params)
+        # data = await self._fetch(endpoint, params=params)
+        data = await self._fetch_new_version(url=endpoint, params=params)
         return data
 
     async def get_years(self, dataset) -> list:
@@ -93,6 +136,11 @@ class SafetyAdministrationAPI:
             
         endpoint =  f"{self.BASE_URL}{self.ENDPOINTS_DICT['years'][dataset]}"
         data = await self._fetch_menu_items(endpoint, params=params)
+        
+        if not data:
+            import sys
+            # print(f)
+            sys.exit("Extracting years failed... exiting script.")
         
         results_format = self.results_naming[dataset]['results']
         year_format = self.results_naming[dataset]['year']
@@ -133,6 +181,7 @@ class SafetyAdministrationAPI:
                       , 'make' : make}
             
             endpoint_enriched =  f"{self.BASE_URL}{self.ENDPOINTS_DICT['models'][dataset]}"
+            # print(f"INSIDE GET_MODELS -> URL -> {endpoint_enriched}")
         elif dataset == 'ratings':
             relative_url = f"{year}/make/{make}"
             endpoint_enriched = f"{self.BASE_URL}{self.ENDPOINTS_DICT['makes'][dataset]}/{relative_url}"
@@ -142,6 +191,9 @@ class SafetyAdministrationAPI:
         # endpoint = f"{self.BASE_URL}{self.ENDPOINTS['get_makes']}/{relative_url}"
         data = await self._fetch_menu_items(endpoint_enriched, params=params)
         # models = [result["Model"] for result in data["Results"]]
+        
+        if not data:
+            return []
         
         results_format = self.results_naming[dataset]['results']
         model_format = self.results_naming[dataset]['model']
@@ -153,6 +205,8 @@ class SafetyAdministrationAPI:
     async def get_vehicle_ids(self, year: int, make: str, model: str) -> list:
         relative_url = f"{year}/make/{make}/model/{model}"
         endpoint = f"{self.BASE_URL}{self.ENDPOINTS['get_makes']}/{relative_url}"
+        
+        # print(f"EndPoint is {endpoint}")
         data = await self._fetch_menu_items(endpoint)
         
         vehicle_dict = {}
@@ -180,7 +234,20 @@ class SafetyAdministrationAPI:
         endpoint = f"{self.BASE_URL}{self.ENDPOINTS['get_recalls']}"
         params = {"make" : make, "model" : model, "modelYear" : year}
         data = await self._fetch_menu_items(endpoint, params=params)
-        return data["results"]
+        
+        if not data:
+            return None
+        else:
+            if data["Count"] > 0:
+            # print('GOT RESULTS for state', state)
+                return data["results"]
+        # else:
+        #     # print('GOT NO RESULTS for state', state)
+        #     return None
+        
+        # if not data:
+        #     return []
+        # return data["results"]
     
     async def get_complaints(self, year: int, make: str, model: str) -> list:
         endpoint = f"{self.BASE_URL}{self.ENDPOINTS['get_complaints']}"
@@ -364,6 +431,8 @@ class SafetyAdministrationETL:
         first_columns.extend([c for c in df.columns if c not in first_columns])
         return df[first_columns]
     
+    def _check_if_attribute_exists(self, attribute_name : str):
+        return hasattr(self, attribute_name) and getattr(self, attribute_name) is not None
 
     async def extract(self, api: SafetyAdministrationAPI, dataset : str):
         print(f"Started Extracting for dataset {dataset}.....")
@@ -384,9 +453,13 @@ class SafetyAdministrationETL:
 
             for make in filtered_makes:
                 model_names = await api.get_models(year = y, make = make, dataset=dataset)
+                
+                # SHORTENING MODELS ARRAY FOR TESTING:
+                # model_names = model_names[:10]
+        
                 for model_name in model_names:
                     models.append(Model(model_name, make, int(y), api))
-        
+            
         print(f"\t-Dataset '{dataset}' -> Extracted {len(models)} models.")
                 
         # for idx, mdl in enumerate(models):
@@ -466,7 +539,9 @@ class SafetyAdministrationETL:
         await asyncio.gather(*(process_vehicle(v) for v in self.vehicles['ratings']))
 
         # Concatenate DataFrames
-        self.df_safety_ratings = await self._safe_concat(df_ratings_array)
+        df_ratings = await self._safe_concat(df_ratings_array)
+        
+        self.df_safety_ratings = await self._reorder_dataframe(df_ratings, ['VehicleId', 'VehicleDescription', 'Make', 'Model', 'ModelYear', 'ComplaintsCount', 'RecallsCount'])
         
         inspect_df(self.df_safety_ratings, 'ratings_df')
     
@@ -526,7 +601,7 @@ class SafetyAdministrationETL:
         async with aiohttp.ClientSession() as session:
             semaphore = asyncio.Semaphore(self.concurrency)
             api = SafetyAdministrationAPI(session, semaphore)
-
+            
             await self.extract(api, dataset = 'ratings')
             await self.extract(api, dataset = 'recalls')
             await self.extract(api, dataset = 'complaints')
@@ -536,8 +611,8 @@ class SafetyAdministrationETL:
             await self.process_recalls()
             await self.process_complaints()
 
-            self.write_to_csv(df=self.df_safety_ratings, filename="SafetyRatings", df_name="df_safety_ratings")
-            self.write_to_csv(df=self.df_recalls, filename="Recalls", df_name="df_recalls")
-            self.write_to_csv(df=self.df_complaints, filename="Complaints", df_name="df_complaints")
-            self.write_to_csv(df=self.df_inspections, filename="InspectionsLocation", df_name="df_inspections")
+            self.write_to_csv(df=self.df_safety_ratings, filename="SafetyRatings", df_name="df_safety_ratings") if self._check_if_attribute_exists("df_safety_ratings") else None
+            self.write_to_csv(df=self.df_recalls, filename="Recalls", df_name="df_recalls") if self._check_if_attribute_exists("df_recalls") else None
+            self.write_to_csv(df=self.df_complaints, filename="Complaints", df_name="df_complaints") if self._check_if_attribute_exists("df_complaints") else None
+            self.write_to_csv(df=self.df_inspections, filename="InspectionsLocation", df_name="df_inspections") if self._check_if_attribute_exists("df_inspections") else None
             
