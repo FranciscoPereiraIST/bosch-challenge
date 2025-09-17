@@ -46,8 +46,11 @@ def main():
     # output_alternative_fuel = etl_afdc.get_output()
     # print_output_info(output_dict=output_alternative_fuel, dataset = dataset)
     
-    produce_schemas()
+    # need to produce schemas every run? cause there may exist new dataframes for the AlternativeFul Data that were not obtained in previous runs
+    # although the parameters are fixed for now........
+    latest_files = produce_schemas(write_json_flag=False)
     
+    print("\n", latest_files)
     
 if __name__ == "__main__":
     main()

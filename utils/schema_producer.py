@@ -67,7 +67,7 @@ def df_schema_to_json(df: pd.DataFrame, name: str = "dataframe", outfile: str = 
 
     return result
 
-def produce_schemas():
+def produce_schemas(write_json_flag: bool = False):
     
     file_substrings = {}
     file_substrings['FuelEconomy'] = ["fuel", "emissions", "summary", "detail"]
@@ -106,4 +106,8 @@ def produce_schemas():
             
             print(f"Producing schema for '{name}' using file '{file_name}'...")
             
-            schema = df_schema_to_json(df, name=name, outfile=f"{folder_name}/{name}.json")
+            schema = df_schema_to_json(df, name=name, outfile=f"{folder_name}/{name}.json") if write_json_flag else None
+            
+    return latest_files
+            
+        
