@@ -102,9 +102,9 @@ class Vehicle:
         self.emissions_flag_exist = bool(self.emissionsList)
         self.mpg_flag_summary_exist = False
         self.mpg_flag_detail_exist = False
-        self.emissions_df = None
-        self.mpg_summary_df = None
-        self.mpg_detail_df = None
+        self.df_emissions = None
+        self.df_mpg_summary = None
+        self.df_mpg_detail = None
         self.fuel_raw = details_json
 
     def process_fuel_info(self):
@@ -126,7 +126,7 @@ class Vehicle:
             
             # print(self.emissionsList["emissionsInfo"])
             
-            self.emissions_df = emissions_df
+            self.df_emissions = emissions_df
             # sys.exit()
             # except Exception as e:
             #     print(len(self.emissionsList), isinstance(self.emissionsList, list), isinstance(self.emissionsList, dict))
@@ -137,7 +137,7 @@ class Vehicle:
         mpg_summary = await self.api.get_MPG_summary(url=self.api.BASE_MPG_SUMMARY_URL, vehicle_id=self.id)
         if mpg_summary:
             self.mpg_flag_summary_exist = True
-            self.mpg_summary_df = pd.DataFrame([mpg_summary])
+            self.df_mpg_summary = pd.DataFrame([mpg_summary])
 
     async def get_MPG_detail_info(self):
         mpg_detail = await self.api.get_MPG_summary(url=self.api.BASE_MPG_DETAIL_URL, vehicle_id=self.id)
@@ -148,7 +148,7 @@ class Vehicle:
                 output = [data]
             else:
                 output = data
-            self.mpg_detail_df = pd.DataFrame(output)
+            self.df_mpg_detail = pd.DataFrame(output)
 
 
 class Model:
@@ -233,15 +233,15 @@ class FuelEconomyETL:
 
             vehicle.process_emissions_list()
             if vehicle.emissions_flag_exist:
-                df_emissions_array.append(vehicle.emissions_df)
+                df_emissions_array.append(vehicle.df_emissions)
 
             await vehicle.get_MPG_summary_info()
             if vehicle.mpg_flag_summary_exist:
-                df_mpg_summary_array.append(vehicle.mpg_summary_df)
+                df_mpg_summary_array.append(vehicle.df_mpg_summary)
 
             await vehicle.get_MPG_detail_info()
             if vehicle.mpg_flag_detail_exist:
-                df_mpg_detail_array.append(vehicle.mpg_detail_df)
+                df_mpg_detail_array.append(vehicle.df_mpg_detail)
 
             # Update counter and check for milestone prints
             processed_count += 1
@@ -255,9 +255,9 @@ class FuelEconomyETL:
 
         # Concatenate DataFrames
         self.df_fuel = await self._safe_concat(df_array)
-        self.emissions_df = await self._safe_concat(df_emissions_array)
-        self.mpg_summary_df = await self._safe_concat(df_mpg_summary_array)
-        self.mpg_detail_df = await self._safe_concat(df_mpg_detail_array)
+        self.df_emissions = await self._safe_concat(df_emissions_array)
+        self.df_mpg_summary = await self._safe_concat(df_mpg_summary_array)
+        self.df_mpg_detail = await self._safe_concat(df_mpg_detail_array)
 
     async def process_old(self):
         print(f"Started Processing.....")
@@ -272,23 +272,23 @@ class FuelEconomyETL:
 
             vehicle.process_emissions_list()
             if vehicle.emissions_flag_exist:
-                df_emissions_array.append(vehicle.emissions_df)
+                df_emissions_array.append(vehicle.df_emissions)
 
             await vehicle.get_MPG_summary_info()
             if vehicle.mpg_flag_summary_exist:
-                df_mpg_summary_array.append(vehicle.mpg_summary_df)
+                df_mpg_summary_array.append(vehicle.df_mpg_summary)
 
             await vehicle.get_MPG_detail_info()
             if vehicle.mpg_flag_detail_exist:
-                df_mpg_detail_array.append(vehicle.mpg_detail_df)
+                df_mpg_detail_array.append(vehicle.df_mpg_detail)
 
         # process all vehicles concurrently
         await asyncio.gather(*(process_vehicle(v) for v in self.vehicles))
 
         self.df_fuel = await self._safe_concat(df_array)
-        self.emissions_df = await self._safe_concat(df_emissions_array)
-        self.mpg_summary_df = await self._safe_concat(df_mpg_summary_array)
-        self.mpg_detail_df = await self._safe_concat(df_mpg_detail_array)
+        self.df_emissions = await self._safe_concat(df_emissions_array)
+        self.df_mpg_summary = await self._safe_concat(df_mpg_summary_array)
+        self.df_mpg_detail = await self._safe_concat(df_mpg_detail_array)
 
     def write_to_csv(self, df: pd.DataFrame, filename: str, df_name: str = "DataFrame"):
         if df is not None:
@@ -303,6 +303,14 @@ class FuelEconomyETL:
 
             df.to_csv(filename, index=False)
             print(f"Dataframe '{df_name}' written to file '{filename}' ({df.shape[0]} rows, {df.shape[1]} cols)")
+            
+    def get_output(self):
+       
+        return {
+            df.split('_', 1)[1]: getattr(self, df)
+            for df in self.__dict__
+            if df.startswith('df') and getattr(self, df) is not None
+        }
 
     async def run_all(self):
         async with aiohttp.ClientSession() as session:
@@ -312,7 +320,9 @@ class FuelEconomyETL:
             await self.extract(api)
             await self.process()
 
+            # change attribute name to start with df!!!!
+            
             self.write_to_csv(df=self.df_fuel, filename="FuelEconomy", df_name="fuel_info")
-            self.write_to_csv(df=self.emissions_df, filename="Emissions", df_name="emissions")
-            self.write_to_csv(df=self.mpg_summary_df, filename="MPG_Summary", df_name="mpg_summary")
-            self.write_to_csv(df=self.mpg_detail_df, filename="MPG_Detail", df_name="mpg_detail")
+            self.write_to_csv(df=self.df_emissions, filename="Emissions", df_name="emissions")
+            self.write_to_csv(df=self.df_mpg_summary, filename="MPG_Summary", df_name="mpg_summary")
+            self.write_to_csv(df=self.df_mpg_detail, filename="MPG_Detail", df_name="mpg_detail")

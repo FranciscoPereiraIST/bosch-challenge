@@ -136,10 +136,7 @@ class AlternativeFuelAPI:
             return None
 
 class AlternativeFuelETL:
-    def __init__(self, num_years=1, concurrency=10):
-        self.num_years = num_years
-        self.vehicles = {}
-        self.models = {}
+    def __init__(self, concurrency=10):
         self.concurrency = concurrency  # limit concurrent requests
 
     async def _safe_concat(self, df_list):
@@ -399,7 +396,6 @@ class AlternativeFuelETL:
             
             os.makedirs(folder_name) if not os.path.isdir(folder_name) else None
             
-            # filename = f"{folder_name}/{filename}_{len(self.vehicles)}_vehicles_{current_time}.csv"
             filename = f"{folder_name}/{filename}_{current_time}.csv"
 
             df.to_csv(filename, index=False, sep=sep, quoting=1)
@@ -410,12 +406,11 @@ class AlternativeFuelETL:
         return ''.join(word.capitalize() for word in snake_str.split('_'))
     
     def get_output(self):
-        df_objects = [k for k in self.__dict__.keys() if k.startswith('df')]
-        output = {}
-        for df in df_objects:
-            output[df.split('_', 1)[1]] = getattr(self, df)
-        
-        return output
+        return {
+            df.split('_', 1)[1]: getattr(self, df)
+            for df in self.__dict__
+            if df.startswith('df') and getattr(self, df) is not None
+        }
     
     async def run_all(self):
         async with aiohttp.ClientSession() as session:

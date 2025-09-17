@@ -1,0 +1,64 @@
+{
+    "Complaints": {
+        "odiNumber": {
+            "dtype": "int",
+            "example": "11681434"
+        },
+        "manufacturer": {
+            "dtype": "string",
+            "example": "General Motors, LLC"
+        },
+        "type": {
+            "dtype": "string",
+            "example": "Vehicle"
+        },
+        "productYear": {
+            "dtype": "int",
+            "example": "2026"
+        },
+        "productMake": {
+            "dtype": "string",
+            "example": "CHEVROLET"
+        },
+        "productModel": {
+            "dtype": "string",
+            "example": "SILVERADO EV"
+        },
+        "crash": {
+            "dtype": "boolean",
+            "example": "False"
+        },
+        "fire": {
+            "dtype": "boolean",
+            "example": "False"
+        },
+        "numberOfInjuries": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "numberOfDeaths": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "dateOfIncident": {
+            "dtype": "datetime",
+            "example": "08/04/2025"
+        },
+        "dateComplaintFiled": {
+            "dtype": "datetime",
+            "example": "08/18/2025"
+        },
+        "vin": {
+            "dtype": "string",
+            "example": "1GC403ED4TU"
+        },
+        "components": {
+            "dtype": "string",
+            "example": "FORWARD COLLISION AVOIDANCE"
+        },
+        "summary": {
+            "dtype": "string",
+            "example": "The contact owns a 2026 Chevrolet Silverado EV. The contact stated that while driving at an undisclosed speed and towing, the adaptive cruise control set speed independently decreased. No warning lights were illuminated. The adaptive cruise control was set at 65 MPH, and the adaptive cruise control independently reset to 42 MPH. In addition, on another occasion, the adaptive speed control was set at 65 MPH, however the adaptive cruise control independently reset to 80 MPH. The contact stated that the adaptive cruise control and the failure ceased; however, the failure reoccurred. The contact stated that the failure almost caused the vehicle to be rear-ended. The contact stated that the failure had occurred several times and usually at night. The vehicle was not diagnosed or repaired by an independent mechanic or the dealer. The dealer was made aware of the failure. The vehicle was scheduled for a diagnostic test. The manufacturer was not made aware of the failure. The failure mileage was approximately 700."
+        }
+    }
+}

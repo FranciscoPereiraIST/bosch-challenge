@@ -596,6 +596,13 @@ class SafetyAdministrationETL:
 
             df.to_csv(filename, index=False)
             print(f"Dataframe '{df_name}' written to file '{filename}' ({df.shape[0]} rows, {df.shape[1]} cols)")
+            
+    def get_output(self):
+        return {
+            df.split('_', 1)[1]: getattr(self, df)
+            for df in self.__dict__
+            if df.startswith('df') and getattr(self, df) is not None
+        }
 
     async def run_all(self):
         async with aiohttp.ClientSession() as session:
