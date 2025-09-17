@@ -4,12 +4,13 @@ from utils.fuel_economy_async import FuelEconomyETL
 from utils.highway_safety_admin_async import SafetyAdministrationETL
 from utils.alternative_fuel_async import AlternativeFuelETL
 from utils.schema_producer import produce_schemas
+from utils.data_processing import Processing
 
 from time import perf_counter
 import asyncio
 
 def print_output_info(output_dict: dict, dataset : str):
-    print("\nOutput dataframes for dataset '{dataset}':")
+    print(f"\nOutput dataframes for dataset '{dataset}':")
     for k in output_dict.keys():
         df = output_dict[k]
         print(f"Output df named '{k}' has shape ({df.shape[0]}, {df.shape[1]})") if df is not None else print(f"Output df named '{k}' is None.")
@@ -51,6 +52,15 @@ def main():
     latest_files = produce_schemas(write_json_flag=False)
     
     print("\n", latest_files)
+    
+    processing = Processing(file_dict=latest_files)
+    processing.run_all(write_flag=True)
+    
+    dataset = 'TEST'
+    output_processing = processing.get_output()
+    print_output_info(output_dict=output_processing, dataset = dataset)
+    
+    
     
 if __name__ == "__main__":
     main()

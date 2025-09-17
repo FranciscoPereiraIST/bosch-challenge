@@ -1,0 +1,9 @@
+cylDeact,cylDeactYesNo,mpgData,mpgRevised,phevBlended,cylDeact_bool,cylDeactYesNo_bool,mpgData_bool,mpgRevised_bool,phevBlended_bool
+N,No,N,False,False,False,False,False,False,False
+Y,Yes,N,False,False,True,True,False,False,False
+N,No,Y,False,False,False,False,True,False,False
+N,No,N,False,True,False,False,False,False,True
+,No,N,False,False,,False,False,False,False
+,No,Y,False,False,,False,True,False,False
+Y,Yes,Y,False,False,True,True,True,False,False
+N,No,Y,False,True,False,False,True,False,True

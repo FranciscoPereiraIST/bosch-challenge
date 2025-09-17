@@ -133,11 +133,11 @@
             "example": "2025-03-14T00:00:00-04:00"
         },
         "cylDeact": {
-            "dtype": "boolean",
+            "dtype": "string",
             "example": "N"
         },
         "cylDeactYesNo": {
-            "dtype": "boolean",
+            "dtype": "string",
             "example": "No"
         },
         "cylinders": {
@@ -273,7 +273,7 @@
             "example": "2025-06-25T00:00:00-04:00"
         },
         "mpgData": {
-            "dtype": "boolean",
+            "dtype": "string",
             "example": "N"
         },
         "mpgRevised": {
@@ -329,7 +329,7 @@
             "example": 0.0
         },
         "startStop": {
-            "dtype": "boolean",
+            "dtype": "string",
             "example": "Y"
         },
         "trans_dscr": {
