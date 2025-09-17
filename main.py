@@ -5,9 +5,11 @@ from utils.highway_safety_admin_async import SafetyAdministrationETL
 from utils.alternative_fuel_async import AlternativeFuelETL
 from utils.schema_producer import produce_schemas
 from utils.data_processing import Processing
+from utils.data_loading import Loading
 
 from time import perf_counter
 import asyncio
+import json
 
 def print_output_info(output_dict: dict, dataset : str):
     print(f"\nOutput dataframes for dataset '{dataset}':")
@@ -51,15 +53,33 @@ def main():
     # although the parameters are fixed for now........
     latest_files = produce_schemas(write_json_flag=False)
     
-    print("\n", latest_files)
+    # print("\n", latest_files)
     
-    processing = Processing(file_dict=latest_files)
-    processing.run_all(write_flag=True)
+    # processing = Processing(file_dict=latest_files)
+    # processing.run_all(write_flag=False)
     
-    dataset = 'ALL SOURCES'
-    output_processing = processing.get_output()
-    print_output_info(output_dict=output_processing, dataset = dataset)
+    # dataset = 'ALL SOURCES'
+    # output_processing = processing.get_output()
+    # print_output_info(output_dict=output_processing, dataset = dataset)
     
+    # Load config
+    with open("connection_config.json", "r") as f:
+        config = json.load(f)
+
+    server = config["server"]
+    database = config["database"]
+    username = config["username"]
+    password = config["password"]
+
+    # Initialize loader
+    loader = Loading(
+            server=server,
+            database=database,
+            username=username,
+            password=password
+    )
+    
+    loader.run_all()
     
     
 if __name__ == "__main__":

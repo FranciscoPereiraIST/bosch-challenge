@@ -2,3 +2,5 @@ requests
 pandas
 asyncio
 aiohttp
+sqlalchemy
+pyodbc

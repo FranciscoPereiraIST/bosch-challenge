@@ -1,0 +1,6 @@
+{
+    "server": "myautomotiveanalytics.database.windows.net",
+    "database": "AutomotiveAnalytics ",
+    "username": "myautomotiveanalyticsuser",
+    "password": "admin1974*"
+}
