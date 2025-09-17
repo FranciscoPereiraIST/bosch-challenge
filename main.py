@@ -56,7 +56,7 @@ def main():
     processing = Processing(file_dict=latest_files)
     processing.run_all(write_flag=True)
     
-    dataset = 'TEST'
+    dataset = 'ALL SOURCES'
     output_processing = processing.get_output()
     print_output_info(output_dict=output_processing, dataset = dataset)
     

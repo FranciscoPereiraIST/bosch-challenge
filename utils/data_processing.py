@@ -9,6 +9,11 @@ class Processing:
         """
         self.file_dict = file_dict
         self.dataframes = {}  # Store loaded DataFrames
+        self.sep_dict = {
+            'FuelEconomy' : ',',
+            'NHTSafetyAdministration' : ',', 
+            'AlternativeFuel' : '|'
+        }
         
     def get_output(self):
         return {
@@ -66,13 +71,7 @@ class Processing:
     def load_files(self):
         """
         Load CSV files into pandas DataFrames.
-        """
-        sep_dict = {
-            'FuelEconomy' : ',',
-            'NHTSafetyAdministration' : ',', 
-            'AlternativeFuel' : '|'
-        }
-        
+        """        
         for dataset, files in self.file_dict.items():
             self.dataframes[dataset] = {}
             for category, filepath in files.items():
@@ -122,7 +121,6 @@ class Processing:
                 continue
             try:
                 dtype = schema[col]['dtype']
-
                 if dtype.startswith("datetime"):                
                     # print(f"Col {col} | {dtype}")
                     df[col] = pd.to_datetime(df[col], utc=True, errors="raise")
@@ -196,8 +194,7 @@ class Processing:
         return ''.join(word.capitalize() for word in snake_str.split('_'))
        
     def convert_columns_to_camel_case(self, df: pd.DataFrame):
-        
-        new_cols = {c: self.to_camel_case(c) for c in df.columns if '_' in c and '_bool' not in c}
+        new_cols = {c: self.to_camel_case(c.replace('-', '')) for c in df.columns if '_' in c and '_bool' not in c}
         
         # print(new_cols)
         
@@ -278,14 +275,15 @@ class Processing:
         json_file = self.dataframes[source][dataset]['schema']
         json_object_name = self.dataframes[source][dataset]['json_object']
         
-        # print("file is ", csv_file, "json_file is ", json_file)
+        print(f"\tProcessing SOURCE {source} | DATASET {dataset} | NAME {json_object_name}...")
         
-        df = pd.read_csv(csv_file, sep = ',')
+        # print("file is ", csv_file, "json_file is ", json_file)        
+        df = pd.read_csv(csv_file, sep = self.sep_dict[source])
         
+        df = self.fix_null_values(df)
         df = self.convert_columns_based_on_schema(df = df, dataset=json_object_name, schema_file=json_file, decimals=3)
         df = self.convert_columns_to_camel_case(df)
         df = self.lower_first_letter(df)
-        df = self.fix_null_values(df)
         print(f"Before duplicate removal -> shape is {df.shape}")
         df = df.drop_duplicates()
         print(f"After duplicate removal -> shape is {df.shape}")
@@ -309,7 +307,7 @@ class Processing:
         json_file = self.dataframes[dataset_test][category]['schema']
         json_object_name = self.dataframes[dataset_test][category]['json_object']
         
-        print(self.dataframes)
+        # print(self.dataframes)
         
         print("file is ", csv_file, "json_file is ", json_file)
         
@@ -339,12 +337,20 @@ class Processing:
     def run_all(self, write_flag: bool = False):
         self.load_files()
         
+        # stop = 0
         for source, v in self.dataframes.items():
-            print(source, v)
+            # print(source, v)
+            # if stop == 1:
+            #     break
             for k, values in v.items():
-                print("source is ", source)
-                print("data set is  ", k)
+                # print("source is ", source)
+                # print("data set is  ", k)
+
+                # if source == 'NHTSafetyAdministration' and k == 'ratings':
+                    # print("source is ", source)
+                    # print("data set is  ", k)
                 self.process_dataframe(source = source, dataset = k, write_flag = write_flag)
-                break
-            break
+                # stop = 1
+                # break
+            
         

@@ -41,7 +41,7 @@
             "example": "251-981-6166"
         },
         "CPSWeekEventFlag": {
-            "dtype": "boolean",
+            "dtype": "string",
             "example": "No"
         },
         "LastUpdatedDate": {
@@ -49,7 +49,7 @@
             "example": "2024-04-25T13:03:10Z"
         },
         "MobileStationFlag": {
-            "dtype": "boolean",
+            "dtype": "string",
             "example": "No"
         },
         "CountiesServed": {

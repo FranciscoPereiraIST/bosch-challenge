@@ -1,7 +1,7 @@
 {
     "SafetyRatings": {
         "VehicleId": {
-            "dtype": "Int64",
+            "dtype": "int",
             "example": "20891"
         },
         "VehicleDescription": {
@@ -17,31 +17,31 @@
             "example": "MDX"
         },
         "ModelYear": {
-            "dtype": "Int64",
+            "dtype": "int",
             "example": "2026"
         },
         "ComplaintsCount": {
-            "dtype": "Int64",
-            "example": "0"  
+            "dtype": "int",
+            "example": "0"
         },
         "RecallsCount": {
-            "dtype": "Int64",
+            "dtype": "int",
             "example": "0"
         },
         "OverallRating": {
-            "dtype": "Int64",
+            "dtype": "string",
             "example": "5"
         },
         "OverallFrontCrashRating": {
-            "dtype": "Int64",
+            "dtype": "string",
             "example": "4"
         },
         "FrontCrashDriversideRating": {
-            "dtype": "Int64",
+            "dtype": "string",
             "example": "4"
         },
         "FrontCrashPassengersideRating": {
-            "dtype": "Int64",
+            "dtype": "string",
             "example": "4"
         },
         "FrontCrashPicture": {
@@ -53,15 +53,15 @@
             "example": "https://static.nhtsa.gov/crashTest/videos/2026/v11663C019.wmv"
         },
         "OverallSideCrashRating": {
-            "dtype": "Int64",
+            "dtype": "string",
             "example": "5"
         },
         "SideCrashDriversideRating": {
-            "dtype": "Int64",
+            "dtype": "string",
             "example": "5"
         },
         "SideCrashPassengersideRating": {
-            "dtype": "Int64",
+            "dtype": "string",
             "example": "5"
         },
         "SideCrashPicture": {
@@ -73,23 +73,23 @@
             "example": "https://static.nhtsa.gov/crashTest/videos/2026/v11661C013.MP4"
         },
         "combinedSideBarrierAndPoleRating-Front": {
-            "dtype": "Int64",
+            "dtype": "string",
             "example": "5"
         },
         "combinedSideBarrierAndPoleRating-Rear": {
-            "dtype": "Int64",
+            "dtype": "string",
             "example": "5"
         },
         "sideBarrierRating-Overall": {
-            "dtype": "Int64",
+            "dtype": "string",
             "example": "5"
         },
         "RolloverRating": {
-            "dtype": "Int64",
+            "dtype": "string",
             "example": "4"
         },
         "RolloverRating2": {
-            "dtype": "Int64",
+            "dtype": "string",
             "example": "Not Rated"
         },
         "RolloverPossibility": {
@@ -129,7 +129,7 @@
             "example": "No"
         },
         "InvestigationCount": {
-            "dtype": "Int64",
+            "dtype": "int",
             "example": "0"
         },
         "VehiclePicture": {
