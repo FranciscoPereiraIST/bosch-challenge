@@ -388,7 +388,7 @@ class AlternativeFuelETL:
         
         inspect_df(df)
         
-        self.df = df
+        self.df_stations = df
         
 
     def write_to_csv(self, df: pd.DataFrame, filename: str, df_name: str = "DataFrame", sep : str = '|'):
@@ -408,7 +408,15 @@ class AlternativeFuelETL:
     def to_camel_case(self, snake_str):
     # Split by underscore, capitalize each part, and join
         return ''.join(word.capitalize() for word in snake_str.split('_'))
-
+    
+    def get_output(self):
+        df_objects = [k for k in self.__dict__.keys() if k.startswith('df')]
+        output = {}
+        for df in df_objects:
+            output[df.split('_', 1)[1]] = getattr(self, df)
+        
+        return output
+    
     async def run_all(self):
         async with aiohttp.ClientSession() as session:
             semaphore = asyncio.Semaphore(self.concurrency)
@@ -434,7 +442,7 @@ class AlternativeFuelETL:
                                 
                     filename = self.to_camel_case(special_typed_field)
                     # inspect_df(df_attribute_name, name = filename)
-                    self.write_to_csv(df=df_attribute_name, filename=filename, df_name=dataframe_name)
+                    # self.write_to_csv(df=df_attribute_name, filename=filename, df_name=dataframe_name)
 
-            self.write_to_csv(df=self.df, filename="Stations", df_name="df") if self._check_if_attribute_exists("df") else None
+            # self.write_to_csv(df=self.df_stations, filename="Stations", df_name="df_stations") if self._check_if_attribute_exists("df_stations") else None
             

@@ -29,5 +29,13 @@ def main():
     duration_in_secs = perf_counter() - time_before
     print(f"Total time (AlternativeFuel): {duration_in_secs:.3f} s -> {duration_in_secs/60:.1f} min")
     
+    output = etl_afdc.get_output()
+    
+    print("\n")
+    for k in output.keys():
+        df = output[k]
+        print(f"Output df named '{k}' has shape ({df.shape[0]}, {df.shape[1]})")
+
+    
 if __name__ == "__main__":
     main()
