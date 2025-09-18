@@ -98,6 +98,9 @@ class AlternativeFuelAPI:
     async def _fetch_menu_items(self, endpoint: str, params: dict = None) -> list:
         # data = await self._fetch(endpoint, params=params)
         data = await self._fetch_new_version(url=endpoint, params=params)
+        
+        # print(f"DATA IS {data}")
+        
         return data
 
     async def get_stations(self, offset: int, limit: int) -> dict:

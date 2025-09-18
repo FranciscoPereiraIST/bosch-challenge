@@ -53,7 +53,10 @@ def df_schema_to_json(df: pd.DataFrame, name: str = "dataframe", outfile: str = 
                     dtype = "float"
                 elif pd.api.types.is_bool_dtype(df[col]):
                     dtype = "boolean"
-
+                    
+        if col in ['cylDeact','cylDeactYesNo','mpgData']:
+            dtype = 'boolean'
+            
         cols[col] = {
             "dtype": dtype,
             "example": example_val

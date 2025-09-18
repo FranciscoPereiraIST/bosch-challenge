@@ -54,7 +54,7 @@ def main():
     # latest_files = produce_schemas(write_json_flag=False)
     
     sep_dict = {'FuelEconomy' : ',', 'NHTSafetyAdministration' : ',', 'AlternativeFuel' : '|'}
-    latest_extracted_files = produce_schemas(write_json_flag=True, stage_folder='extracted_data', sep_dict=sep_dict)
+    latest_extracted_files = produce_schemas(write_json_flag=False, stage_folder='extracted_data', sep_dict=sep_dict)
     
     # print("\n", latest_files)
     
@@ -66,7 +66,7 @@ def main():
     print_output_info(output_dict=output_processing, dataset = dataset)
     
     sep_dict = {'FuelEconomy' : ',', 'NHTSafetyAdministration' : ',', 'AlternativeFuel' : ','}
-    latest_processed_files = produce_schemas(write_json_flag=True, stage_folder='processed_data', sep_dict=sep_dict)
+    latest_processed_files = produce_schemas(write_json_flag=False, stage_folder='processed_data', sep_dict=sep_dict)
     
     # Load config
     with open("connection_config.json", "r") as f:

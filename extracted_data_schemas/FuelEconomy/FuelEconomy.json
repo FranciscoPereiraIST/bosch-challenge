@@ -2,7 +2,7 @@
     "FuelEconomy": {
         "vehicle_id": {
             "dtype": "int",
-            "example": "48992"
+            "example": "48988"
         },
         "atvType": {
             "dtype": "string",
@@ -10,7 +10,7 @@
         },
         "barrels08": {
             "dtype": "float",
-            "example": 14.167142857142858
+            "example": 14.8755
         },
         "barrelsA08": {
             "dtype": "float",
@@ -46,7 +46,7 @@
         },
         "city08U": {
             "dtype": "float",
-            "example": 18.7066
+            "example": 18.5255
         },
         "cityA08": {
             "dtype": "int",
@@ -78,7 +78,7 @@
         },
         "co2": {
             "dtype": "int",
-            "example": "420"
+            "example": "437"
         },
         "co2A": {
             "dtype": "int",
@@ -90,15 +90,15 @@
         },
         "co2TailpipeGpm": {
             "dtype": "float",
-            "example": 420.0
+            "example": 437.0
         },
         "comb08": {
             "dtype": "int",
-            "example": "21"
+            "example": "20"
         },
         "comb08U": {
             "dtype": "float",
-            "example": 21.1241
+            "example": 20.4448
         },
         "combA08": {
             "dtype": "int",
@@ -133,32 +133,32 @@
             "example": "2025-03-14T00:00:00-04:00"
         },
         "cylDeact": {
-            "dtype": "string",
+            "dtype": "boolean",
             "example": "N"
         },
         "cylDeactYesNo": {
-            "dtype": "string",
+            "dtype": "boolean",
             "example": "No"
         },
         "cylinders": {
             "dtype": "int",
-            "example": "6"
+            "example": "4"
         },
         "displ": {
             "dtype": "float",
-            "example": 3.0
+            "example": 2.0
         },
         "drive": {
             "dtype": "string",
-            "example": "4-Wheel Drive"
+            "example": "All-Wheel Drive"
         },
         "engId": {
             "dtype": "int",
-            "example": "567"
+            "example": "550"
         },
         "eng_dscr": {
             "dtype": "string",
-            "example": "SIDI; Mild Hybrid"
+            "example": "SIDI"
         },
         "evMotor": {
             "dtype": "string",
@@ -170,7 +170,7 @@
         },
         "fuelCost08": {
             "dtype": "int",
-            "example": "2900"
+            "example": "3050"
         },
         "fuelCostA08": {
             "dtype": "int",
@@ -202,11 +202,11 @@
         },
         "highway08": {
             "dtype": "int",
-            "example": "25"
+            "example": "23"
         },
         "highway08U": {
             "dtype": "float",
-            "example": 25.0863
+            "example": 23.409
         },
         "highwayA08": {
             "dtype": "int",
@@ -246,7 +246,7 @@
         },
         "id": {
             "dtype": "int",
-            "example": "48992"
+            "example": "48988"
         },
         "lv2": {
             "dtype": "int",
@@ -266,14 +266,14 @@
         },
         "model": {
             "dtype": "string",
-            "example": "Range Rover Velar P400 MHEV"
+            "example": "Discovery Sport"
         },
         "modifiedOn": {
             "dtype": "datetime",
-            "example": "2025-04-01T00:00:00-04:00"
+            "example": "2025-06-25T00:00:00-04:00"
         },
         "mpgData": {
-            "dtype": "string",
+            "dtype": "boolean",
             "example": "N"
         },
         "mpgRevised": {
@@ -338,11 +338,11 @@
         },
         "trany": {
             "dtype": "string",
-            "example": "Automatic (S8)"
+            "example": "Automatic (S9)"
         },
         "UCity": {
             "dtype": "float",
-            "example": 23.4798
+            "example": 23.2538
         },
         "UCityA": {
             "dtype": "float",
@@ -350,7 +350,7 @@
         },
         "UHighway": {
             "dtype": "float",
-            "example": 35.278
+            "example": 34.2146
         },
         "UHighwayA": {
             "dtype": "float",
@@ -366,11 +366,11 @@
         },
         "youSaveSpend": {
             "dtype": "int",
-            "example": "-6000"
+            "example": "-6750"
         },
         "baseModel": {
             "dtype": "string",
-            "example": "Range Rover"
+            "example": "Discovery"
         },
         "sCharger": {
             "dtype": "string",

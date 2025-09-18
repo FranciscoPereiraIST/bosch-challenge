@@ -365,6 +365,6 @@ class Loading:
                 
                 # df = pd.read_csv(csv_file, sep = self.sep_dict[source])
                 df = pd.read_csv(csv_file, sep = ',')
-                df = df.head(n=1)
+                df = df.head(n=100)
                 
                 self.insert_dataframe(df, table_name=json_object_name, schema="stg", if_exists="append")
