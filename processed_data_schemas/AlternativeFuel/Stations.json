@@ -1,0 +1,284 @@
+{
+    "Stations": {
+        "id": {
+            "dtype": "int",
+            "example": "6505"
+        },
+        "stationName": {
+            "dtype": "string",
+            "example": "City of Pasadena - Holly Street Garage"
+        },
+        "fuelTypeCode": {
+            "dtype": "string",
+            "example": "ELEC"
+        },
+        "ownerTypeCode": {
+            "dtype": "string",
+            "example": "LG"
+        },
+        "country": {
+            "dtype": "string",
+            "example": "US"
+        },
+        "state": {
+            "dtype": "string",
+            "example": "CA"
+        },
+        "city": {
+            "dtype": "string",
+            "example": "Pasadena"
+        },
+        "streetAddress": {
+            "dtype": "string",
+            "example": "150 E Holly St"
+        },
+        "zip": {
+            "dtype": "int",
+            "example": "91103"
+        },
+        "openDate": {
+            "dtype": "datetime",
+            "example": "2014-01-20 00:00:00+00:00"
+        },
+        "updatedAt": {
+            "dtype": "datetime",
+            "example": "2025-07-17 16:07:56+00:00"
+        },
+        "accessCode": {
+            "dtype": "string",
+            "example": "public"
+        },
+        "accessDaysTime": {
+            "dtype": "string",
+            "example": "24 hours daily; pay lot"
+        },
+        "accessDetailCode": {
+            "dtype": "string",
+            "example": "CREDIT_CARD_ALWAYS"
+        },
+        "cardsAccepted": {
+            "dtype": "string",
+            "example": "CREDIT"
+        },
+        "dateLastConfirmed": {
+            "dtype": "datetime",
+            "example": "2025-06-06 00:00:00+00:00"
+        },
+        "expectedDate": {
+            "dtype": "float64",
+            "example": null
+        },
+        "groupsWithAccessCode": {
+            "dtype": "string",
+            "example": "Public"
+        },
+        "maximumVehicleClass": {
+            "dtype": "string",
+            "example": "LD"
+        },
+        "restrictedAccess": {
+            "dtype": "boolean",
+            "example": "False"
+        },
+        "statusCode": {
+            "dtype": "string",
+            "example": "E"
+        },
+        "facilityType": {
+            "dtype": "string",
+            "example": "PARKING_GARAGE"
+        },
+        "stationPhone": {
+            "dtype": "string",
+            "example": "626-744-7665"
+        },
+        "geocodeStatus": {
+            "dtype": "string",
+            "example": "200-8"
+        },
+        "latitude": {
+            "dtype": "float",
+            "example": 34.148
+        },
+        "longitude": {
+            "dtype": "float",
+            "example": -118.147
+        },
+        "intersectionDirections": {
+            "dtype": "string",
+            "example": "South on Hwy 99, exit at Paige going west, 1 mile to South K St, go 1 mile south; LCNG station"
+        },
+        "plus4": {
+            "dtype": "float64",
+            "example": null
+        },
+        "bdBlends": {
+            "dtype": "float64",
+            "example": null
+        },
+        "cngDispenserNum": {
+            "dtype": "float64",
+            "example": null
+        },
+        "cngFillTypeCode": {
+            "dtype": "float64",
+            "example": null
+        },
+        "cngHasRng": {
+            "dtype": "float64",
+            "example": null
+        },
+        "cngPsi": {
+            "dtype": "float64",
+            "example": null
+        },
+        "cngRenewableSource": {
+            "dtype": "float64",
+            "example": null
+        },
+        "cngTotalCompression": {
+            "dtype": "float64",
+            "example": null
+        },
+        "cngTotalStorage": {
+            "dtype": "float64",
+            "example": null
+        },
+        "cngVehicleClass": {
+            "dtype": "float64",
+            "example": null
+        },
+        "e85BlenderPump": {
+            "dtype": "float64",
+            "example": null
+        },
+        "evDcFastNum": {
+            "dtype": "float",
+            "example": 1.0
+        },
+        "evLevel1EvseNum": {
+            "dtype": "float",
+            "example": 2.0
+        },
+        "evLevel2EvseNum": {
+            "dtype": "float",
+            "example": 26.0
+        },
+        "evNetwork": {
+            "dtype": "string",
+            "example": "Non-Networked"
+        },
+        "evNetworkWeb": {
+            "dtype": "float64",
+            "example": null
+        },
+        "evOtherEvse": {
+            "dtype": "string",
+            "example": "1 Conductive 120V"
+        },
+        "evPricing": {
+            "dtype": "string",
+            "example": "Free"
+        },
+        "evRenewableSource": {
+            "dtype": "string",
+            "example": "NONE"
+        },
+        "evWorkplaceCharging": {
+            "dtype": "boolean",
+            "example": false
+        },
+        "hyIsRetail": {
+            "dtype": "boolean",
+            "example": true
+        },
+        "hyStatusLink": {
+            "dtype": "string",
+            "example": "https://m.h2fcp.org/content/torrance"
+        },
+        "lngHasRng": {
+            "dtype": "boolean",
+            "example": true
+        },
+        "lngRenewableSource": {
+            "dtype": "string",
+            "example": "NONE"
+        },
+        "lngVehicleClass": {
+            "dtype": "string",
+            "example": "HD"
+        },
+        "lpgPrimary": {
+            "dtype": "float64",
+            "example": null
+        },
+        "ngFillTypeCode": {
+            "dtype": "float64",
+            "example": null
+        },
+        "ngPsi": {
+            "dtype": "float64",
+            "example": null
+        },
+        "ngVehicleClass": {
+            "dtype": "string",
+            "example": "HD"
+        },
+        "rdBlendedWithBiodiesel": {
+            "dtype": "float64",
+            "example": null
+        },
+        "rdBlends": {
+            "dtype": "float64",
+            "example": null
+        },
+        "rdBlendsFr": {
+            "dtype": "float64",
+            "example": null
+        },
+        "rdMaxBiodieselLevel": {
+            "dtype": "float64",
+            "example": null
+        },
+        "npsUnitName": {
+            "dtype": "float64",
+            "example": null
+        },
+        "accessDaysTimeFr": {
+            "dtype": "float64",
+            "example": null
+        },
+        "intersectionDirectionsFr": {
+            "dtype": "float64",
+            "example": null
+        },
+        "bdBlendsFr": {
+            "dtype": "float64",
+            "example": null
+        },
+        "groupsWithAccessCodeFr": {
+            "dtype": "string",
+            "example": "Public"
+        },
+        "evPricingFr": {
+            "dtype": "float64",
+            "example": null
+        },
+        "restricted_access_bool": {
+            "dtype": "boolean",
+            "example": "False"
+        },
+        "ev_workplace_charging_bool": {
+            "dtype": "boolean",
+            "example": false
+        },
+        "hy_is_retail_bool": {
+            "dtype": "boolean",
+            "example": true
+        },
+        "lng_has_rng_bool": {
+            "dtype": "boolean",
+            "example": true
+        }
+    }
+}

@@ -1,0 +1,28 @@
+{
+    "MPG_Detail": {
+        "cityPercent": {
+            "dtype": "int",
+            "example": "55"
+        },
+        "highwayPercent": {
+            "dtype": "int",
+            "example": "45"
+        },
+        "lastDate": {
+            "dtype": "datetime",
+            "example": "2025-08-21 04:00:00+00:00"
+        },
+        "mpg": {
+            "dtype": "float",
+            "example": 31.002
+        },
+        "state": {
+            "dtype": "string",
+            "example": "AZ"
+        },
+        "vehicleId": {
+            "dtype": "int",
+            "example": "47940"
+        }
+    }
+}

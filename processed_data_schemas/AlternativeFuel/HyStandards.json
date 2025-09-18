@@ -1,0 +1,12 @@
+{
+    "HyStandards": {
+        "id": {
+            "dtype": "int",
+            "example": "30131"
+        },
+        "hyStandards": {
+            "dtype": "string",
+            "example": "J2601"
+        }
+    }
+}

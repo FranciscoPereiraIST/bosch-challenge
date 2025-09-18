@@ -1,0 +1,408 @@
+{
+    "FuelEconomy": {
+        "vehicleId": {
+            "dtype": "int",
+            "example": "48987"
+        },
+        "atvType": {
+            "dtype": "string",
+            "example": "Hybrid"
+        },
+        "barrels08": {
+            "dtype": "float",
+            "example": 17.501
+        },
+        "barrelsA08": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "battery": {
+            "dtype": "string",
+            "example": "-1"
+        },
+        "c240Dscr": {
+            "dtype": "float64",
+            "example": null
+        },
+        "c240bDscr": {
+            "dtype": "float64",
+            "example": null
+        },
+        "charge120": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "charge240": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "charge240b": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "city08": {
+            "dtype": "int",
+            "example": "15"
+        },
+        "city08U": {
+            "dtype": "float",
+            "example": 14.97
+        },
+        "cityA08": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "cityA08U": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "cityCD": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "cityE": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "cityMpk": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "cityUF": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "cityUmpk": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "co2": {
+            "dtype": "int",
+            "example": "519"
+        },
+        "co2A": {
+            "dtype": "int",
+            "example": "-1"
+        },
+        "co2TailpipeAGpm": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "co2TailpipeGpm": {
+            "dtype": "float",
+            "example": 519.0
+        },
+        "comb08": {
+            "dtype": "int",
+            "example": "17"
+        },
+        "comb08U": {
+            "dtype": "float",
+            "example": 17.081
+        },
+        "combA08": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "combA08U": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "combE": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "combMpk": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "combUmpk": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "combinedCD": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "combinedUF": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "createdOn": {
+            "dtype": "datetime",
+            "example": "2025-03-14 04:00:00+00:00"
+        },
+        "cylDeact": {
+            "dtype": "string",
+            "example": "N"
+        },
+        "cylDeactYesNo": {
+            "dtype": "string",
+            "example": "No"
+        },
+        "cylinders": {
+            "dtype": "float",
+            "example": 8.0
+        },
+        "displ": {
+            "dtype": "float",
+            "example": 5.0
+        },
+        "drive": {
+            "dtype": "string",
+            "example": "All-Wheel Drive"
+        },
+        "engId": {
+            "dtype": "int",
+            "example": "770"
+        },
+        "engDscr": {
+            "dtype": "string",
+            "example": "SIDI"
+        },
+        "evMotor": {
+            "dtype": "string",
+            "example": "48V Li-Ion"
+        },
+        "feScore": {
+            "dtype": "int",
+            "example": "3"
+        },
+        "fuelCost08": {
+            "dtype": "int",
+            "example": "3550"
+        },
+        "fuelCostA08": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "fuelType": {
+            "dtype": "string",
+            "example": "Premium"
+        },
+        "fuelType1": {
+            "dtype": "string",
+            "example": "Premium Gasoline"
+        },
+        "fuelType2": {
+            "dtype": "string",
+            "example": "Electricity"
+        },
+        "ghgScore": {
+            "dtype": "int",
+            "example": "3"
+        },
+        "ghgScoreA": {
+            "dtype": "int",
+            "example": "-1"
+        },
+        "guzzler": {
+            "dtype": "string",
+            "example": "G"
+        },
+        "highway08": {
+            "dtype": "int",
+            "example": "21"
+        },
+        "highway08U": {
+            "dtype": "float",
+            "example": 20.638
+        },
+        "highwayA08": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "highwayA08U": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "highwayCD": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "highwayE": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "highwayMpk": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "highwayUF": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "highwayUmpk": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "hlv": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "hpv": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "id": {
+            "dtype": "int",
+            "example": "48987"
+        },
+        "lv2": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "lv4": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "make": {
+            "dtype": "string",
+            "example": "Jaguar"
+        },
+        "mfrCode": {
+            "dtype": "string",
+            "example": "JLX"
+        },
+        "model": {
+            "dtype": "string",
+            "example": "F-Pace SVR"
+        },
+        "modifiedOn": {
+            "dtype": "datetime",
+            "example": "2025-06-25 04:00:00+00:00"
+        },
+        "mpgData": {
+            "dtype": "string",
+            "example": "N"
+        },
+        "mpgRevised": {
+            "dtype": "boolean",
+            "example": "False"
+        },
+        "phevBlended": {
+            "dtype": "boolean",
+            "example": "False"
+        },
+        "phevCity": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "phevComb": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "phevHwy": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "pv2": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "pv4": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "range": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "rangeA": {
+            "dtype": "string",
+            "example": "33"
+        },
+        "rangeCity": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "rangeCityA": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "rangeHwy": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "rangeHwyA": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "startStop": {
+            "dtype": "string",
+            "example": "Y"
+        },
+        "transDscr": {
+            "dtype": "float64",
+            "example": null
+        },
+        "trany": {
+            "dtype": "string",
+            "example": "Automatic (S8)"
+        },
+        "uCity": {
+            "dtype": "float",
+            "example": 18.504
+        },
+        "uCityA": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "uHighway": {
+            "dtype": "float",
+            "example": 28.563
+        },
+        "uHighwayA": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "vClass": {
+            "dtype": "string",
+            "example": "Small Sport Utility Vehicle 4WD"
+        },
+        "year": {
+            "dtype": "int",
+            "example": "2026"
+        },
+        "youSaveSpend": {
+            "dtype": "int",
+            "example": "-9250"
+        },
+        "baseModel": {
+            "dtype": "string",
+            "example": "F-Pace"
+        },
+        "sCharger": {
+            "dtype": "string",
+            "example": "S"
+        },
+        "tCharger": {
+            "dtype": "string",
+            "example": "T"
+        },
+        "cylDeact_bool": {
+            "dtype": "boolean",
+            "example": false
+        },
+        "cylDeactYesNo_bool": {
+            "dtype": "boolean",
+            "example": "False"
+        },
+        "mpgData_bool": {
+            "dtype": "boolean",
+            "example": "False"
+        },
+        "mpgRevised_bool": {
+            "dtype": "boolean",
+            "example": "False"
+        },
+        "phevBlended_bool": {
+            "dtype": "boolean",
+            "example": "False"
+        },
+        "startStop_bool": {
+            "dtype": "boolean",
+            "example": "True"
+        }
+    }
+}

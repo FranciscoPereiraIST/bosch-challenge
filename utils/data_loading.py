@@ -1,10 +1,10 @@
 import pandas as pd
 from sqlalchemy import create_engine, text, NVARCHAR, FLOAT, INTEGER, DateTime, BOOLEAN
 from sqlalchemy.exc import SQLAlchemyError
-from datetime import datetime
 import json
 import os
 from pathlib import Path
+from utils.schema_producer_new import produce_schemas
 
 class Loading:
     def __init__(self, server, database, username, password, file_dict: dict):
@@ -96,7 +96,7 @@ class Loading:
             )
             print(f"DataFrame written to {schema}.{table_name} successfully")
         except SQLAlchemyError as e:
-            print("Error writing DataFrame to SQL:", e)
+            print(f"\t ERROR WRITING DataFrame to SQL table {schema}.{table_name}: \n\t{e}")
 
     def insert_dataframe_old(self, df: pd.DataFrame, table_name: str, schema: str = "dbo", if_exists: str = "append"):
         """
@@ -137,18 +137,23 @@ class Loading:
         except SQLAlchemyError as e:
             print("Error creating schema:", e)
             
-    def generate_create_table_sql(self, json_schema: dict, table_name: str, schema: str = "dbo") -> str:
+    def generate_create_table_sql_old(self, json_file: str, table_name: str, schema: str = "dbo") -> str:
         """
         Generate a CREATE TABLE script from a JSON schema with column names and types.
         
         Parameters:
-            json_schema: dict containing columns and types (like your FuelEconomy JSON)
+            json_schema: name of the json containing columns and types (like your FuelEconomy JSON)
             table_name: name of the SQL table
             schema: schema name (default 'dbo')
         
         Returns:
             str: SQL CREATE TABLE script
         """
+        
+        with open(json_file, "r", encoding="utf-8") as f:
+            json_schema = json.load(f)[table_name]
+        
+        
         sql_lines = [f"CREATE TABLE [{schema}].[{table_name}] ("]
         col_defs = []
 
@@ -174,7 +179,68 @@ class Loading:
 
         return "\n".join(sql_lines)
     
-    def save_sql_to_file(self, dataset: str, sql_string: str, filename: str):
+
+    def generate_create_table_sql(self, json_file: str, table_name: str, schema: str = "dbo") -> str:
+        """
+        Generate a CREATE TABLE script from a JSON schema with column names and types.
+        The script will only create the table if it does not already exist.
+        
+        Parameters:
+            json_file: path to the JSON file containing the schema
+            table_name: name of the SQL table
+            schema: schema name (default 'dbo')
+        
+        Returns:
+            str: SQL CREATE TABLE script with IF NOT EXISTS wrapper
+        """
+        
+        with open(json_file, "r", encoding="utf-8") as f:
+            json_schema = json.load(f)[table_name]
+        
+        # table_name = table_name+"_NEW"
+        
+        col_defs = []
+
+        for col_name, col_info in json_schema.items():
+            dtype = col_info.get("dtype", "string").lower()
+
+            if dtype in ["int", "int64"]:
+                sql_type = "INT"
+            elif dtype in ["float", "float64"]:
+                sql_type = "FLOAT"
+            elif dtype in ["boolean", "bool"]:
+                sql_type = "BIT"
+            elif dtype in ["datetime"]:
+                sql_type = "DATETIMEOFFSET"  # use DATETIMEOFFSET for timezone-aware strings
+            else:
+                sql_type = "NVARCHAR(255)"  # default for string columns
+                if col_name in ['notes', 'summary', 'remedy']:
+                    sql_type = "NVARCHAR(MAX)"
+
+            col_defs.append(f"    [{col_name}] {sql_type} NULL")
+            
+        # Add InsertedAt column at the end, defaulting to current time
+        col_defs.append("    [InsertedAt] DATETIME NOT NULL DEFAULT GETDATE()")
+
+        # Build the CREATE TABLE body separately
+        cols_sql = ",\n".join(col_defs)
+
+        # Wrap with IF NOT EXISTS
+        sql_script = (
+            f"IF NOT EXISTS (\n"
+            f"    SELECT 1 \n"
+            f"    FROM INFORMATION_SCHEMA.TABLES \n"
+            f"    WHERE TABLE_SCHEMA = '{schema}' \n"
+            f"      AND TABLE_NAME = '{table_name}'\n"
+            f")\n"
+            f"BEGIN\n"
+            f"    CREATE TABLE [{schema}].[{table_name}] (\n{cols_sql}\n    );\n"
+            f"END;"
+        )
+
+        return sql_script
+    
+    def save_sql_to_file(self, dataset: str, folder : str, sql_string: str, filename: str):
         """
         Save a SQL string to a .sql file.
         
@@ -182,7 +248,7 @@ class Loading:
             sql_string: The CREATE TABLE or any SQL statement as a string
             filename: Name of the file to save (e.g., 'create_table.sql')
         """
-        folder_name = f"sql_scripts/{dataset}"
+        folder_name = f"{folder}/{dataset}"
         os.makedirs(folder_name) if not os.path.isdir(folder_name) else None
 
         filename = f"{folder_name}/{filename}.sql"
@@ -228,7 +294,7 @@ class Loading:
             for category, filepath in files.items():
                 try:
                     substring_name = self.get_schema_file(filepath=filepath)
-                    json_schema = f"schemas/{dataset}/{substring_name}.json"
+                    json_schema = f"{stage.replace('_data', '')}_schemas/{dataset}/{substring_name}.json"
                     
                     # print(f"CATEGORY {category} | DATASET {dataset} | File path {filepath} -> json schema is '{json_schema}'")
                     
@@ -262,58 +328,43 @@ class Loading:
 
     def run_all(self):
         
-        self.load_files(file_dict=self.file_dict, stage = 'extract')
-        
-        source = 'FuelEconomy'
-        category = 'fuel'
-        
-        csv_file_extract = self.dataframes['extract'][source][category]['data']
-        json_file = self.dataframes['extract'][source][category]['schema']
-        json_object_name = self.dataframes['extract'][source][category]['json_object']
-        
         latest_processed_files = self.get_latest_files(folder_name='processed_data')
+        # print(latest_processed_files)
         
-        print(latest_processed_files)
+        # _ = produce_schemas(write_json_flag=True, stage_folder='processed_data')
         
-        self.load_files(file_dict=latest_processed_files, stage = 'process')
+        self.load_files(file_dict=latest_processed_files, stage = 'processed')
         
-        csv_file = self.dataframes['process'][source][category]['data']
+        # print("FINAL DICT:", self.dataframes)
         
-        print(f"LOADING FILE {csv_file}")
-        
-        df = pd.read_csv(csv_file, sep = self.sep_dict[source])
-        df = df.head(n=100)
-        
-        self.insert_dataframe(df, table_name=json_object_name, schema="stg", if_exists="append")
-                
-        # with open(json_file, "r", encoding="utf-8") as f:
-        #     schema = json.load(f)[json_object_name]
+        stage = 'processed'
+        for source, source_dict in self.dataframes[stage].items():
+            # print(f"Source {source} | source_dict {source_dict}")
             
-        # print(schema)
-    
-        # output = self.generate_create_table_sql(json_schema = schema, table_name = json_object_name, schema = "stg")
+            for category in source_dict:
+                
+                # if category != 'fuel':
+                csv_file = self.dataframes[stage][source][category]['data']
+                json_file = self.dataframes[stage][source][category]['schema']
+                json_file = "processed_data_schemas/"+json_file.split("/", 1)[1]  
+                json_object_name = self.dataframes[stage][source][category]['json_object']
+            
+                # print(f"CSV FILE {csv_file} | JSON NAME {json_object_name}")
+                
+                output = self.generate_create_table_sql(json_file = json_file, table_name = json_object_name, schema = "stg")
 
-        # print("output is :\n", output)
-        
-        # self.save_sql_to_file(dataset = source, sql_string = output, filename = f'CREATE_TABLE_{json_object_name.upper()}')
-        
-        # self.execute_sql_file(file_path = f"sql_scripts/{source}/CREATE_TABLE_{json_object_name.upper()}.sql")
-        
-        
-        # Sample DataFrame
-        # df = pd.DataFrame({
-        #     "id": [1, 2, 3],
-        #     "name": ["Alice", "Bob", "Charlie"],
-        #     "value": [10.5, 20.7, 30.2],
-        #     "createdOn": [datetime.now(), datetime.now(), datetime.now()]
-        # })
-        
-        # print(df.head(n=10))
+                create_table_file_name = f'CREATE_TABLE_{json_object_name.upper()}'
+                
+                folder_scripts = 'sql_scripts'
+                
+                path_w_folder = f"{folder_scripts}/{source}/{create_table_file_name}.sql"
+                            
+                self.save_sql_to_file(dataset = source, folder = folder_scripts, sql_string = output, filename = create_table_file_name) if not os.path.isfile(path_w_folder) else print('file already exists')
 
-        # Create schema 'stg' if it doesn't exist
-        # self.create_schema("stg")
-
-        # Insert DataFrame into stg.TestData (append if exists)
-        # self.insert_dataframe(df, table_name="TestData", schema="stg", if_exists="append")
-        
-        # create audit columns like InsertedAt????
+                self.execute_sql_file(file_path = path_w_folder)
+                
+                # df = pd.read_csv(csv_file, sep = self.sep_dict[source])
+                df = pd.read_csv(csv_file, sep = ',')
+                df = df.head(n=10)
+                
+                self.insert_dataframe(df, table_name=json_object_name, schema="stg", if_exists="append")

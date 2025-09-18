@@ -1,4 +1,11 @@
-CREATE TABLE IF NOT EXISTS [stg].[FuelEconomy] (
+IF NOT EXISTS (
+    SELECT 1 
+    FROM INFORMATION_SCHEMA.TABLES 
+    WHERE TABLE_SCHEMA = 'stg' 
+      AND TABLE_NAME = 'FuelEconomy'
+)
+BEGIN
+    CREATE TABLE [stg].[FuelEconomy] (
     [vehicleId] INT NULL,
     [atvType] NVARCHAR(255) NULL,
     [barrels08] FLOAT NULL,
@@ -99,5 +106,7 @@ CREATE TABLE IF NOT EXISTS [stg].[FuelEconomy] (
     [mpgData_bool] BIT NULL,
     [mpgRevised_bool] BIT NULL,
     [phevBlended_bool] BIT NULL,
-    [startStop_bool] BIT NULL
-);
+    [startStop_bool] BIT NULL,
+    [InsertedAt] DATETIME NOT NULL DEFAULT GETDATE()
+    );
+END;

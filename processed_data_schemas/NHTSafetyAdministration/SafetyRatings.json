@@ -1,0 +1,140 @@
+{
+    "SafetyRatings": {
+        "vehicleId": {
+            "dtype": "int",
+            "example": "20891"
+        },
+        "vehicleDescription": {
+            "dtype": "string",
+            "example": "2026 ACURA MDX SUV N/A FWD"
+        },
+        "make": {
+            "dtype": "string",
+            "example": "ACURA"
+        },
+        "model": {
+            "dtype": "string",
+            "example": "MDX"
+        },
+        "modelYear": {
+            "dtype": "int",
+            "example": "2026"
+        },
+        "complaintsCount": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "recallsCount": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "overallRating": {
+            "dtype": "float",
+            "example": 5.0
+        },
+        "overallFrontCrashRating": {
+            "dtype": "float",
+            "example": 4.0
+        },
+        "frontCrashDriversideRating": {
+            "dtype": "float",
+            "example": 4.0
+        },
+        "frontCrashPassengersideRating": {
+            "dtype": "float",
+            "example": 4.0
+        },
+        "frontCrashPicture": {
+            "dtype": "string",
+            "example": "https://static.nhtsa.gov/crashTest/images/2026/v11663P084.jpg"
+        },
+        "frontCrashVideo": {
+            "dtype": "string",
+            "example": "https://static.nhtsa.gov/crashTest/videos/2026/v11663C019.wmv"
+        },
+        "overallSideCrashRating": {
+            "dtype": "float",
+            "example": 5.0
+        },
+        "sideCrashDriversideRating": {
+            "dtype": "float",
+            "example": 5.0
+        },
+        "sideCrashPassengersideRating": {
+            "dtype": "float",
+            "example": 5.0
+        },
+        "sideCrashPicture": {
+            "dtype": "string",
+            "example": "https://static.nhtsa.gov/crashTest/images/2026/v11661P105.JPG"
+        },
+        "sideCrashVideo": {
+            "dtype": "string",
+            "example": "https://static.nhtsa.gov/crashTest/videos/2026/v11661C013.MP4"
+        },
+        "combinedSideBarrierAndPoleRating-Front": {
+            "dtype": "float",
+            "example": 5.0
+        },
+        "combinedSideBarrierAndPoleRating-Rear": {
+            "dtype": "float",
+            "example": 5.0
+        },
+        "sideBarrierRating-Overall": {
+            "dtype": "float",
+            "example": 5.0
+        },
+        "rolloverRating": {
+            "dtype": "float",
+            "example": 4.0
+        },
+        "rolloverRating2": {
+            "dtype": "float",
+            "example": 1.0
+        },
+        "rolloverPossibility": {
+            "dtype": "float",
+            "example": 0.151
+        },
+        "rolloverPossibility2": {
+            "dtype": "float",
+            "example": 0.0
+        },
+        "dynamicTipResult": {
+            "dtype": "string",
+            "example": "No Tip"
+        },
+        "sidePoleCrashRating": {
+            "dtype": "float",
+            "example": 5.0
+        },
+        "sidePolePicture": {
+            "dtype": "string",
+            "example": "https://static.nhtsa.gov/crashTest/images/2026/v11662P074.jpg"
+        },
+        "sidePoleVideo": {
+            "dtype": "string",
+            "example": "https://static.nhtsa.gov/crashTest/videos/2026/v11662C013.wmv"
+        },
+        "nHTSAElectronicStabilityControl": {
+            "dtype": "string",
+            "example": "Standard"
+        },
+        "nHTSAForwardCollisionWarning": {
+            "dtype": "string",
+            "example": "No"
+        },
+        "nHTSALaneDepartureWarning": {
+            "dtype": "string",
+            "example": "No"
+        },
+        "investigationCount": {
+            "dtype": "int",
+            "example": "0"
+        },
+        "vehiclePicture": {
+            "dtype": "string",
+            "example": "https://static.nhtsa.gov/images/vehicles/BTL_55217_cc0640_032_SI.png"
+        }
+    }
+}

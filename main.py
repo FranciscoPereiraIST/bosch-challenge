@@ -3,7 +3,8 @@
 from utils.fuel_economy_async import FuelEconomyETL
 from utils.highway_safety_admin_async import SafetyAdministrationETL
 from utils.alternative_fuel_async import AlternativeFuelETL
-from utils.schema_producer import produce_schemas
+# from utils.schema_producer import produce_schemas
+from utils.schema_producer_new import produce_schemas
 from utils.data_processing import Processing
 from utils.data_loading import Loading
 
@@ -51,7 +52,10 @@ def main():
     
     # need to produce schemas every run? cause there may exist new dataframes for the AlternativeFul Data that were not obtained in previous runs
     # although the parameters are fixed for now........
-    latest_files = produce_schemas(write_json_flag=False)
+    # latest_files = produce_schemas(write_json_flag=False)
+    
+    latest_processed_files = produce_schemas(write_json_flag=True, stage_folder='processed_data')
+
     
     # print("\n", latest_files)
     
@@ -77,7 +81,7 @@ def main():
             database=database,
             username=username,
             password=password, 
-            file_dict=latest_files
+            file_dict=latest_processed_files #latest_files
     )
     
     loader.run_all()

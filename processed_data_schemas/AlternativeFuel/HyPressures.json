@@ -1,0 +1,12 @@
+{
+    "HyPressures": {
+        "id": {
+            "dtype": "int",
+            "example": "30131"
+        },
+        "hyPressures": {
+            "dtype": "int",
+            "example": "350"
+        }
+    }
+}

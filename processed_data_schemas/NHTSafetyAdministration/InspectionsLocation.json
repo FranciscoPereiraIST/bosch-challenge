@@ -1,0 +1,76 @@
+{
+    "InspectionsLocation": {
+        "state": {
+            "dtype": "string",
+            "example": "AL"
+        },
+        "city": {
+            "dtype": "string",
+            "example": "Orange Beach"
+        },
+        "zip": {
+            "dtype": "string",
+            "example": "36561"
+        },
+        "organization": {
+            "dtype": "string",
+            "example": "Orange Beach Fire Department"
+        },
+        "contactFirstName": {
+            "dtype": "string",
+            "example": "Anna"
+        },
+        "contactLastName": {
+            "dtype": "string",
+            "example": "Odom"
+        },
+        "addressLine1": {
+            "dtype": "string",
+            "example": "25855 John Snook Drive"
+        },
+        "email": {
+            "dtype": "string",
+            "example": "jeffj@city.ketchikan.ak.us"
+        },
+        "fax": {
+            "dtype": "string",
+            "example": "https://denvergov.org/Government/Agencies-Departments-Offices/Agencies-Departments-Offices-Directory/Department-of-Transportation-and-Infrastructure/Programs-Services/OCBE#section-5"
+        },
+        "phone1": {
+            "dtype": "string",
+            "example": "251-981-6166"
+        },
+        "cPSWeekEventFlag": {
+            "dtype": "string",
+            "example": "No"
+        },
+        "lastUpdatedDate": {
+            "dtype": "datetime",
+            "example": "2024-04-25 13:03:10+00:00"
+        },
+        "mobileStationFlag": {
+            "dtype": "string",
+            "example": "No"
+        },
+        "countiesServed": {
+            "dtype": "string",
+            "example": "Apache"
+        },
+        "locationLatitude": {
+            "dtype": "float",
+            "example": 30.303
+        },
+        "locationLongitude": {
+            "dtype": "float",
+            "example": -87.562
+        },
+        "cPSWeekEventFlag_bool": {
+            "dtype": "boolean",
+            "example": "False"
+        },
+        "mobileStationFlag_bool": {
+            "dtype": "boolean",
+            "example": "False"
+        }
+    }
+}

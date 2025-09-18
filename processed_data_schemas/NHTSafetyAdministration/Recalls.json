@@ -1,0 +1,76 @@
+{
+    "Recalls": {
+        "manufacturer": {
+            "dtype": "string",
+            "example": "General Motors, LLC"
+        },
+        "nHTSACampaignNumber": {
+            "dtype": "string",
+            "example": "25V483000"
+        },
+        "parkIt": {
+            "dtype": "boolean",
+            "example": "False"
+        },
+        "parkOutSide": {
+            "dtype": "boolean",
+            "example": "False"
+        },
+        "overTheAirUpdate": {
+            "dtype": "boolean",
+            "example": "False"
+        },
+        "reportReceivedDate": {
+            "dtype": "datetime",
+            "example": "2025-07-24 00:00:00+00:00"
+        },
+        "component": {
+            "dtype": "string",
+            "example": "ELECTRICAL SYSTEM:PROPULSION SYSTEM:TRACTION BATTERY"
+        },
+        "summary": {
+            "dtype": "string",
+            "example": "General Motors (GM) is recalling certain 2026 Cadillac VISTIQ vehicles and 2025 Cadillac LYRIQ vehicles. The bolts attaching the high voltage battery to the interior floor may be missing or loose."
+        },
+        "consequence": {
+            "dtype": "string",
+            "example": "An improperly secured battery may become damaged in a crash, increasing the risk of a fire."
+        },
+        "remedy": {
+            "dtype": "string",
+            "example": "Dealers will inspect the high-voltage battery bolts and replace or re-tighten the bolts, as necessary, free of charge. Owner notification letters are scheduled to be mailed September 8, 2025. Owners may contact Cadillac customer service at 1-800-333-4223. GM's number for this recall is N252511300."
+        },
+        "notes": {
+            "dtype": "string",
+            "example": "Owners may also contact the National Highway Traffic Safety Administration Vehicle Safety Hotline at 1-888-327-4236 (TTY 1-800-424-9153) or go to nhtsa.gov."
+        },
+        "modelYear": {
+            "dtype": "int",
+            "example": "2026"
+        },
+        "make": {
+            "dtype": "string",
+            "example": "CADILLAC"
+        },
+        "model": {
+            "dtype": "string",
+            "example": "VISTIQ"
+        },
+        "nHTSAActionNumber": {
+            "dtype": "string",
+            "example": "EA23003"
+        },
+        "parkIt_bool": {
+            "dtype": "boolean",
+            "example": "False"
+        },
+        "parkOutSide_bool": {
+            "dtype": "boolean",
+            "example": "False"
+        },
+        "overTheAirUpdate_bool": {
+            "dtype": "boolean",
+            "example": "False"
+        }
+    }
+}
