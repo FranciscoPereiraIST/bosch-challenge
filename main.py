@@ -76,7 +76,8 @@ def main():
             server=server,
             database=database,
             username=username,
-            password=password
+            password=password, 
+            file_dict=latest_files
     )
     
     loader.run_all()
