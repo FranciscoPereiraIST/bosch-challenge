@@ -250,24 +250,6 @@ class Processing:
 
             df.to_csv(filename, index=False)
             print(f"Dataframe '{df_name}' written to file '{filename}' ({df.shape[0]} rows, {df.shape[1]} cols)")
-        
-    def clean_data(self):
-        """
-        Perform general cleaning steps (e.g., drop duplicates, trim strings).
-        """
-        pass
-    
-    def enrich_data(self):
-        """
-        Add or transform columns for enrichment.
-        """
-        pass
-    
-    def save_processed(self, out_dir: str):
-        """
-        Save processed DataFrames back to CSV/Parquet.
-        """
-        pass
     
     def process_dataframe(self, source: str, dataset: str, write_flag: bool = False):
         
