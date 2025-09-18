@@ -3,8 +3,7 @@
 from utils.fuel_economy_async import FuelEconomyETL
 from utils.highway_safety_admin_async import SafetyAdministrationETL
 from utils.alternative_fuel_async import AlternativeFuelETL
-# from utils.schema_producer import produce_schemas
-from utils.schema_producer_new import produce_schemas
+from utils.schema_producer import produce_schemas
 from utils.data_processing import Processing
 from utils.data_loading import Loading
 

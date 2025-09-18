@@ -2,11 +2,11 @@
     "SafetyRatings": {
         "VehicleId": {
             "dtype": "int",
-            "example": "20899"
+            "example": "20891"
         },
         "VehicleDescription": {
             "dtype": "string",
-            "example": "2026 ACURA INTEGRA 5 HB N/A FWD"
+            "example": "2026 ACURA MDX SUV N/A FWD"
         },
         "Make": {
             "dtype": "string",
@@ -14,7 +14,7 @@
         },
         "Model": {
             "dtype": "string",
-            "example": "INTEGRA"
+            "example": "MDX"
         },
         "ModelYear": {
             "dtype": "int",
@@ -34,23 +34,23 @@
         },
         "OverallFrontCrashRating": {
             "dtype": "string",
-            "example": "5"
+            "example": "4"
         },
         "FrontCrashDriversideRating": {
             "dtype": "string",
-            "example": "5"
+            "example": "4"
         },
         "FrontCrashPassengersideRating": {
             "dtype": "string",
-            "example": "5"
+            "example": "4"
         },
         "FrontCrashPicture": {
             "dtype": "string",
-            "example": "https://static.nhtsa.gov/crashTest/images/2026/v14258P084.jpg"
+            "example": "https://static.nhtsa.gov/crashTest/images/2026/v11663P084.jpg"
         },
         "FrontCrashVideo": {
             "dtype": "string",
-            "example": "https://static.nhtsa.gov/crashTest/videos/2026/v14258C019.wmv"
+            "example": "https://static.nhtsa.gov/crashTest/videos/2026/v11663C019.wmv"
         },
         "OverallSideCrashRating": {
             "dtype": "string",
@@ -66,11 +66,11 @@
         },
         "SideCrashPicture": {
             "dtype": "string",
-            "example": "https://static.nhtsa.gov/crashTest/images/2026/v14261P105.jpg"
+            "example": "https://static.nhtsa.gov/crashTest/images/2026/v11661P105.JPG"
         },
         "SideCrashVideo": {
             "dtype": "string",
-            "example": "https://static.nhtsa.gov/crashTest/videos/2026/v14261C013.wmv"
+            "example": "https://static.nhtsa.gov/crashTest/videos/2026/v11661C013.MP4"
         },
         "combinedSideBarrierAndPoleRating-Front": {
             "dtype": "string",
@@ -86,7 +86,7 @@
         },
         "RolloverRating": {
             "dtype": "string",
-            "example": "5"
+            "example": "4"
         },
         "RolloverRating2": {
             "dtype": "string",
@@ -94,7 +94,7 @@
         },
         "RolloverPossibility": {
             "dtype": "float",
-            "example": 0.095
+            "example": 0.151
         },
         "RolloverPossibility2": {
             "dtype": "float",
@@ -110,11 +110,11 @@
         },
         "SidePolePicture": {
             "dtype": "string",
-            "example": "https://static.nhtsa.gov/crashTest/images/2026/v14260P074.jpg"
+            "example": "https://static.nhtsa.gov/crashTest/images/2026/v11662P074.jpg"
         },
         "SidePoleVideo": {
             "dtype": "string",
-            "example": "https://static.nhtsa.gov/crashTest/videos/2026/v14260C013.wmv"
+            "example": "https://static.nhtsa.gov/crashTest/videos/2026/v11662C013.wmv"
         },
         "NHTSAElectronicStabilityControl": {
             "dtype": "string",

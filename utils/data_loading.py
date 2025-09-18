@@ -4,7 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 import json
 import os
 from pathlib import Path
-from utils.schema_producer_new import produce_schemas
+from utils.schema_producer import produce_schemas
 
 class Loading:
     def __init__(self, server, database, username, password, file_dict: dict):
@@ -365,6 +365,6 @@ class Loading:
                 
                 # df = pd.read_csv(csv_file, sep = self.sep_dict[source])
                 df = pd.read_csv(csv_file, sep = ',')
-                # df = df.head(n=10)
+                df = df.head(n=1)
                 
                 self.insert_dataframe(df, table_name=json_object_name, schema="stg", if_exists="append")

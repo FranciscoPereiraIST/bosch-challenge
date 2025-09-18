@@ -77,7 +77,7 @@ class Processing:
             for category, filepath in files.items():
                 try:
                     substring_name = self.get_schema_file(filepath=filepath)
-                    json_schema = f"schemas/{dataset}/{substring_name}.json"
+                    json_schema = f"extracted_data_schemas/{dataset}/{substring_name}.json"
                     
                     # print(f"CATEGORY {category} | DATASET {dataset} | File path {filepath} -> json schema is '{json_schema}'")
                     

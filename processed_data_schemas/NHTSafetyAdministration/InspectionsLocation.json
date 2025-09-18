@@ -63,14 +63,6 @@
         "locationLongitude": {
             "dtype": "float",
             "example": -87.562
-        },
-        "cPSWeekEventFlag_bool": {
-            "dtype": "boolean",
-            "example": "False"
-        },
-        "mobileStationFlag_bool": {
-            "dtype": "boolean",
-            "example": "False"
         }
     }
 }

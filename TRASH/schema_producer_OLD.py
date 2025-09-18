@@ -67,7 +67,7 @@ def df_schema_to_json(df: pd.DataFrame, name: str = "dataframe", outfile: str = 
 
     return result
 
-def produce_schemas(sep_dict : dict, write_json_flag: bool = False, stage_folder: str = 'extracted'):
+def produce_schemas(write_json_flag: bool = False):
     
     file_substrings = {}
     file_substrings['FuelEconomy'] = ["fuel", "emissions", "summary", "detail"]
@@ -76,18 +76,16 @@ def produce_schemas(sep_dict : dict, write_json_flag: bool = False, stage_folder
     
     latest_files = {}
     # latest_fuel = [get_most_recent_file("extracted_data/FuelEconomy", sub_str) for sub_str in file_substrings_fuel]
-    latest_files['FuelEconomy'] = {k : get_most_recent_file(f"{stage_folder}/FuelEconomy", k) for k in file_substrings['FuelEconomy']}
-    latest_files['NHTSafetyAdministration'] = {k : get_most_recent_file(f"{stage_folder}/NHTSafetyAdministration", k) for k in file_substrings['NHTSafetyAdministration']}
-    latest_files['AlternativeFuel'] = {k : get_most_recent_file(f"{stage_folder}/AlternativeFuel", k) for k in file_substrings['AlternativeFuel']}
-    
-    # print(f"LATEST FILES!!!!!!!!!", latest_files)
+    latest_files['FuelEconomy'] = {k : get_most_recent_file("extracted_data/FuelEconomy", k) for k in file_substrings['FuelEconomy']}
+    latest_files['NHTSafetyAdministration'] = {k : get_most_recent_file("extracted_data/NHTSafetyAdministration", k) for k in file_substrings['NHTSafetyAdministration']}
+    latest_files['AlternativeFuel'] = {k : get_most_recent_file("extracted_data/AlternativeFuel", k) for k in file_substrings['AlternativeFuel']}
     
     for dataset, files_in_dataset in latest_files.items():
         
-        folder_name = f"{stage_folder}_schemas"
+        folder_name = "schemas"
         os.makedirs(folder_name) if not os.path.isdir(folder_name) else None
         
-        folder_name = f"{folder_name}/{dataset}"
+        folder_name = f"schemas/{dataset}"
         os.makedirs(folder_name) if not os.path.isdir(folder_name) else None
             
         for df_name, file_name in files_in_dataset.items():
@@ -98,12 +96,12 @@ def produce_schemas(sep_dict : dict, write_json_flag: bool = False, stage_folder
             if 'MPG' in file_name:
                 substring_name = "_".join([substring_name, aux.split('_', 2)[1]])
             
-            # if dataset == 'AlternativeFuel':
-            #     sep = ','
-            # else:
-            #     sep = ','
+            if dataset == 'AlternativeFuel':
+                sep = '|'
+            else:
+                sep = ','
                 
-            df = pd.read_csv(file_name, sep = sep_dict[dataset])
+            df = pd.read_csv(file_name, sep = sep)
             name = f"{substring_name}"
             
             print(f"Producing schema for '{name}' using file '{file_name}'...")
