@@ -437,7 +437,7 @@ class AlternativeFuelETL:
                                 
                     filename = self.to_camel_case(special_typed_field)
                     # inspect_df(df_attribute_name, name = filename)
-                    # self.write_to_csv(df=df_attribute_name, filename=filename, df_name=dataframe_name)
+                    self.write_to_csv(df=df_attribute_name, filename=filename, df_name=dataframe_name)
 
-            # self.write_to_csv(df=self.df_stations, filename="Stations", df_name="df_stations") if self._check_if_attribute_exists("df_stations") else None
+            self.write_to_csv(df=self.df_stations, filename="Stations", df_name="df_stations") if self._check_if_attribute_exists("df_stations") else None
             

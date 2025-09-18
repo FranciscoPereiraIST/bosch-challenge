@@ -20,51 +20,54 @@ def print_output_info(output_dict: dict, dataset : str):
 
 def main():
     
-    # dataset = 'FuelEconomy'
-    # time_before = perf_counter()
-    # etl = FuelEconomyETL(num_years=2, concurrency=10)
-    # asyncio.run(etl.run_all())
-    # duration_in_secs = perf_counter() - time_before
-    # print(f"Total time ({dataset}): {duration_in_secs:.3f} s -> {duration_in_secs/60:.1f} min")
+    dataset = 'FuelEconomy'
+    time_before = perf_counter()
+    etl = FuelEconomyETL(num_years=1, concurrency=10)
+    asyncio.run(etl.run_all())
+    duration_in_secs = perf_counter() - time_before
+    print(f"Total time ({dataset}): {duration_in_secs:.3f} s -> {duration_in_secs/60:.1f} min")
     
-    # output_fuel_econ = etl.get_output()
-    # print_output_info(output_dict=output_fuel_econ, dataset = dataset)
+    output_fuel_econ = etl.get_output()
+    print_output_info(output_dict=output_fuel_econ, dataset = dataset)
 
-    # dataset = 'NHTSafetyAdmin'
-    # time_before = perf_counter()
-    # etl_nhtsa = SafetyAdministrationETL(num_years=2, concurrency=5)
-    # asyncio.run(etl_nhtsa.run_all())
-    # duration_in_secs = perf_counter() - time_before
-    # print(f"Total time ({dataset}): {duration_in_secs:.3f} s -> {duration_in_secs/60:.1f} min")
+    dataset = 'NHTSafetyAdmin'
+    time_before = perf_counter()
+    etl_nhtsa = SafetyAdministrationETL(num_years=1, concurrency=5)
+    asyncio.run(etl_nhtsa.run_all())
+    duration_in_secs = perf_counter() - time_before
+    print(f"Total time ({dataset}): {duration_in_secs:.3f} s -> {duration_in_secs/60:.1f} min")
     
-    # output_safety = etl_nhtsa.get_output()
-    # print_output_info(output_dict=output_safety, dataset = dataset)
+    output_safety = etl_nhtsa.get_output()
+    print_output_info(output_dict=output_safety, dataset = dataset)
     
-    # dataset = 'AlternativeFuel'
-    # time_before = perf_counter()
-    # etl_afdc = AlternativeFuelETL(concurrency=5)
-    # asyncio.run(etl_afdc.run_all())
-    # duration_in_secs = perf_counter() - time_before
-    # print(f"Total time ({dataset}): {duration_in_secs:.3f} s -> {duration_in_secs/60:.1f} min")
+    dataset = 'AlternativeFuel'
+    time_before = perf_counter()
+    etl_afdc = AlternativeFuelETL(concurrency=5)
+    asyncio.run(etl_afdc.run_all())
+    duration_in_secs = perf_counter() - time_before
+    print(f"Total time ({dataset}): {duration_in_secs:.3f} s -> {duration_in_secs/60:.1f} min")
     
-    # output_alternative_fuel = etl_afdc.get_output()
-    # print_output_info(output_dict=output_alternative_fuel, dataset = dataset)
+    output_alternative_fuel = etl_afdc.get_output()
+    print_output_info(output_dict=output_alternative_fuel, dataset = dataset)
     
     # need to produce schemas every run? cause there may exist new dataframes for the AlternativeFul Data that were not obtained in previous runs
     # although the parameters are fixed for now........
     # latest_files = produce_schemas(write_json_flag=False)
     
-    latest_processed_files = produce_schemas(write_json_flag=True, stage_folder='processed_data')
-
+    sep_dict = {'FuelEconomy' : ',', 'NHTSafetyAdministration' : ',', 'AlternativeFuel' : '|'}
+    latest_extracted_files = produce_schemas(write_json_flag=True, stage_folder='extracted_data', sep_dict=sep_dict)
     
     # print("\n", latest_files)
     
-    # processing = Processing(file_dict=latest_files)
-    # processing.run_all(write_flag=False)
+    processing = Processing(file_dict=latest_extracted_files)
+    processing.run_all(write_flag=True)
     
-    # dataset = 'ALL SOURCES'
-    # output_processing = processing.get_output()
-    # print_output_info(output_dict=output_processing, dataset = dataset)
+    dataset = 'ALL SOURCES'
+    output_processing = processing.get_output()
+    print_output_info(output_dict=output_processing, dataset = dataset)
+    
+    sep_dict = {'FuelEconomy' : ',', 'NHTSafetyAdministration' : ',', 'AlternativeFuel' : ','}
+    latest_processed_files = produce_schemas(write_json_flag=True, stage_folder='processed_data', sep_dict=sep_dict)
     
     # Load config
     with open("connection_config.json", "r") as f:
@@ -85,7 +88,6 @@ def main():
     )
     
     loader.run_all()
-    
     
 if __name__ == "__main__":
     main()

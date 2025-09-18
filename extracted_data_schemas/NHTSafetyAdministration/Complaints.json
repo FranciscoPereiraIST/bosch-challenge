@@ -42,11 +42,11 @@
         },
         "dateOfIncident": {
             "dtype": "datetime",
-            "example": "2025-07-21 00:00:00+00:00"
+            "example": "07/21/2025"
         },
         "dateComplaintFiled": {
             "dtype": "datetime",
-            "example": "2025-07-28 00:00:00+00:00"
+            "example": "07/28/2025"
         },
         "vin": {
             "dtype": "string",
@@ -59,14 +59,6 @@
         "summary": {
             "dtype": "string",
             "example": "I have experienced the vehicle not unlocking when the key fob is near(in my pocket) the vehicle and my hand is touching the door handles. The vehicle is designed to unlock when the key fob is in close proximity while hands are on the handle. This is a safety/security concern because in an emergency, the vehicle does not function as it is intended to."
-        },
-        "crash_bool": {
-            "dtype": "boolean",
-            "example": "False"
-        },
-        "fire_bool": {
-            "dtype": "boolean",
-            "example": "False"
         }
     }
 }

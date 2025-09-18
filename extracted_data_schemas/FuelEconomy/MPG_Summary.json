@@ -1,0 +1,32 @@
+{
+    "MPG_Summary": {
+        "avgMpg": {
+            "dtype": "float",
+            "example": 31.002087683
+        },
+        "cityPercent": {
+            "dtype": "int",
+            "example": "55"
+        },
+        "highwayPercent": {
+            "dtype": "int",
+            "example": "45"
+        },
+        "maxMpg": {
+            "dtype": "int",
+            "example": "31"
+        },
+        "minMpg": {
+            "dtype": "int",
+            "example": "31"
+        },
+        "recordCount": {
+            "dtype": "int",
+            "example": "1"
+        },
+        "vehicleId": {
+            "dtype": "int",
+            "example": "47940"
+        }
+    }
+}

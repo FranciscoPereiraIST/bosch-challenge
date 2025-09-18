@@ -1,102 +1,102 @@
 {
     "SafetyRatings": {
-        "vehicleId": {
+        "VehicleId": {
             "dtype": "int",
             "example": "20899"
         },
-        "vehicleDescription": {
+        "VehicleDescription": {
             "dtype": "string",
             "example": "2026 ACURA INTEGRA 5 HB N/A FWD"
         },
-        "make": {
+        "Make": {
             "dtype": "string",
             "example": "ACURA"
         },
-        "model": {
+        "Model": {
             "dtype": "string",
             "example": "INTEGRA"
         },
-        "modelYear": {
+        "ModelYear": {
             "dtype": "int",
             "example": "2026"
         },
-        "complaintsCount": {
+        "ComplaintsCount": {
             "dtype": "int",
             "example": "0"
         },
-        "recallsCount": {
+        "RecallsCount": {
             "dtype": "int",
             "example": "0"
         },
-        "overallRating": {
-            "dtype": "float",
-            "example": 5.0
+        "OverallRating": {
+            "dtype": "string",
+            "example": "5"
         },
-        "overallFrontCrashRating": {
-            "dtype": "float",
-            "example": 5.0
+        "OverallFrontCrashRating": {
+            "dtype": "string",
+            "example": "5"
         },
-        "frontCrashDriversideRating": {
-            "dtype": "float",
-            "example": 5.0
+        "FrontCrashDriversideRating": {
+            "dtype": "string",
+            "example": "5"
         },
-        "frontCrashPassengersideRating": {
-            "dtype": "float",
-            "example": 5.0
+        "FrontCrashPassengersideRating": {
+            "dtype": "string",
+            "example": "5"
         },
-        "frontCrashPicture": {
+        "FrontCrashPicture": {
             "dtype": "string",
             "example": "https://static.nhtsa.gov/crashTest/images/2026/v14258P084.jpg"
         },
-        "frontCrashVideo": {
+        "FrontCrashVideo": {
             "dtype": "string",
             "example": "https://static.nhtsa.gov/crashTest/videos/2026/v14258C019.wmv"
         },
-        "overallSideCrashRating": {
-            "dtype": "float",
-            "example": 5.0
+        "OverallSideCrashRating": {
+            "dtype": "string",
+            "example": "5"
         },
-        "sideCrashDriversideRating": {
-            "dtype": "float",
-            "example": 5.0
+        "SideCrashDriversideRating": {
+            "dtype": "string",
+            "example": "5"
         },
-        "sideCrashPassengersideRating": {
-            "dtype": "float",
-            "example": 5.0
+        "SideCrashPassengersideRating": {
+            "dtype": "string",
+            "example": "5"
         },
-        "sideCrashPicture": {
+        "SideCrashPicture": {
             "dtype": "string",
             "example": "https://static.nhtsa.gov/crashTest/images/2026/v14261P105.jpg"
         },
-        "sideCrashVideo": {
+        "SideCrashVideo": {
             "dtype": "string",
             "example": "https://static.nhtsa.gov/crashTest/videos/2026/v14261C013.wmv"
         },
         "combinedSideBarrierAndPoleRating-Front": {
-            "dtype": "float",
-            "example": 5.0
+            "dtype": "string",
+            "example": "5"
         },
         "combinedSideBarrierAndPoleRating-Rear": {
-            "dtype": "float",
-            "example": 5.0
+            "dtype": "string",
+            "example": "5"
         },
         "sideBarrierRating-Overall": {
-            "dtype": "float",
-            "example": 5.0
+            "dtype": "string",
+            "example": "5"
         },
-        "rolloverRating": {
-            "dtype": "float",
-            "example": 5.0
+        "RolloverRating": {
+            "dtype": "string",
+            "example": "5"
         },
-        "rolloverRating2": {
-            "dtype": "float64",
-            "example": null
+        "RolloverRating2": {
+            "dtype": "string",
+            "example": "Not Rated"
         },
-        "rolloverPossibility": {
+        "RolloverPossibility": {
             "dtype": "float",
             "example": 0.095
         },
-        "rolloverPossibility2": {
+        "RolloverPossibility2": {
             "dtype": "float",
             "example": 0.0
         },
@@ -104,31 +104,31 @@
             "dtype": "string",
             "example": "No Tip"
         },
-        "sidePoleCrashRating": {
-            "dtype": "float",
-            "example": 5.0
+        "SidePoleCrashRating": {
+            "dtype": "string",
+            "example": "5"
         },
-        "sidePolePicture": {
+        "SidePolePicture": {
             "dtype": "string",
             "example": "https://static.nhtsa.gov/crashTest/images/2026/v14260P074.jpg"
         },
-        "sidePoleVideo": {
+        "SidePoleVideo": {
             "dtype": "string",
             "example": "https://static.nhtsa.gov/crashTest/videos/2026/v14260C013.wmv"
         },
-        "nHTSAElectronicStabilityControl": {
+        "NHTSAElectronicStabilityControl": {
             "dtype": "string",
             "example": "Standard"
         },
-        "nHTSAForwardCollisionWarning": {
+        "NHTSAForwardCollisionWarning": {
             "dtype": "string",
             "example": "No"
         },
-        "nHTSALaneDepartureWarning": {
+        "NHTSALaneDepartureWarning": {
             "dtype": "string",
             "example": "No"
         },
-        "investigationCount": {
+        "InvestigationCount": {
             "dtype": "int",
             "example": "0"
         }

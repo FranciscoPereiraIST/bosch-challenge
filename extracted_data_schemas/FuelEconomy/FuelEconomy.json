@@ -1,6 +1,6 @@
 {
     "FuelEconomy": {
-        "vehicleId": {
+        "vehicle_id": {
             "dtype": "int",
             "example": "48983"
         },
@@ -10,7 +10,7 @@
         },
         "barrels08": {
             "dtype": "float",
-            "example": 14.167
+            "example": 14.167142857142858
         },
         "barrelsA08": {
             "dtype": "float",
@@ -130,7 +130,7 @@
         },
         "createdOn": {
             "dtype": "datetime",
-            "example": "2025-03-14 04:00:00+00:00"
+            "example": "2025-03-14T00:00:00-04:00"
         },
         "cylDeact": {
             "dtype": "string",
@@ -156,7 +156,7 @@
             "dtype": "int",
             "example": "381"
         },
-        "engDscr": {
+        "eng_dscr": {
             "dtype": "string",
             "example": "SIDI"
         },
@@ -270,7 +270,7 @@
         },
         "modifiedOn": {
             "dtype": "datetime",
-            "example": "2025-04-01 04:00:00+00:00"
+            "example": "2025-04-01T00:00:00-04:00"
         },
         "mpgData": {
             "dtype": "string",
@@ -332,7 +332,7 @@
             "dtype": "string",
             "example": "Y"
         },
-        "transDscr": {
+        "trans_dscr": {
             "dtype": "float64",
             "example": null
         },
@@ -340,23 +340,23 @@
             "dtype": "string",
             "example": "Automatic (S10)"
         },
-        "uCity": {
+        "UCity": {
             "dtype": "float",
             "example": 25.4
         },
-        "uCityA": {
+        "UCityA": {
             "dtype": "float",
             "example": 0.0
         },
-        "uHighway": {
+        "UHighway": {
             "dtype": "float",
             "example": 37.3
         },
-        "uHighwayA": {
+        "UHighwayA": {
             "dtype": "float",
             "example": 0.0
         },
-        "vClass": {
+        "VClass": {
             "dtype": "string",
             "example": "Small Sport Utility Vehicle 4WD"
         },
@@ -379,30 +379,6 @@
         "tCharger": {
             "dtype": "string",
             "example": "T"
-        },
-        "cylDeact_bool": {
-            "dtype": "boolean",
-            "example": "True"
-        },
-        "cylDeactYesNo_bool": {
-            "dtype": "boolean",
-            "example": "True"
-        },
-        "mpgData_bool": {
-            "dtype": "boolean",
-            "example": "False"
-        },
-        "mpgRevised_bool": {
-            "dtype": "boolean",
-            "example": "False"
-        },
-        "phevBlended_bool": {
-            "dtype": "boolean",
-            "example": "False"
-        },
-        "startStop_bool": {
-            "dtype": "boolean",
-            "example": "True"
         }
     }
 }

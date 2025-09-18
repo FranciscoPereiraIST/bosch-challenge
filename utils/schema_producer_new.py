@@ -67,7 +67,7 @@ def df_schema_to_json(df: pd.DataFrame, name: str = "dataframe", outfile: str = 
 
     return result
 
-def produce_schemas(write_json_flag: bool = False, stage_folder: str = 'extracted'):
+def produce_schemas(sep_dict : dict, write_json_flag: bool = False, stage_folder: str = 'extracted'):
     
     file_substrings = {}
     file_substrings['FuelEconomy'] = ["fuel", "emissions", "summary", "detail"]
@@ -98,12 +98,12 @@ def produce_schemas(write_json_flag: bool = False, stage_folder: str = 'extracte
             if 'MPG' in file_name:
                 substring_name = "_".join([substring_name, aux.split('_', 2)[1]])
             
-            if dataset == 'AlternativeFuel':
-                sep = ','
-            else:
-                sep = ','
+            # if dataset == 'AlternativeFuel':
+            #     sep = ','
+            # else:
+            #     sep = ','
                 
-            df = pd.read_csv(file_name, sep = sep)
+            df = pd.read_csv(file_name, sep = sep_dict[dataset])
             name = f"{substring_name}"
             
             print(f"Producing schema for '{name}' using file '{file_name}'...")

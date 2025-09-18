@@ -1,0 +1,12 @@
+{
+    "EvConnectorTypes": {
+        "id": {
+            "dtype": "int",
+            "example": "6505"
+        },
+        "ev_connector_types": {
+            "dtype": "string",
+            "example": "J1772"
+        }
+    }
+}

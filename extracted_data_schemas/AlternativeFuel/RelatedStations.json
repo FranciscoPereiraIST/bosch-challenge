@@ -1,0 +1,20 @@
+{
+    "RelatedStations": {
+        "id": {
+            "dtype": "int",
+            "example": "6505"
+        },
+        "related_stations_id": {
+            "dtype": "int",
+            "example": "121595"
+        },
+        "related_stations_access_code": {
+            "dtype": "string",
+            "example": "private"
+        },
+        "related_stations_fuel_type_code": {
+            "dtype": "string",
+            "example": "ELEC"
+        }
+    }
+}
